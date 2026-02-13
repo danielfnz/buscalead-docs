@@ -293,19 +293,24 @@
               </thead>
               <tbody class="divide-y divide-zinc-800/50">
                 <tr>
-                  <td class="py-3 px-4 text-zinc-300">Sem autenticação</td>
+                  <td class="py-3 px-4 text-zinc-300">Sem autenticação <span class="text-zinc-600">(busca de empresas)</span></td>
+                  <td class="py-3 px-4"><code class="text-yellow-400">15</code></td>
+                  <td class="py-3 px-4 text-zinc-500">1 minuto</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 text-zinc-300">Sem autenticação <span class="text-zinc-600">(demais rotas)</span></td>
                   <td class="py-3 px-4"><code class="text-yellow-400">20</code></td>
                   <td class="py-3 px-4 text-zinc-500">1 minuto</td>
                 </tr>
                 <tr>
                   <td class="py-3 px-4 text-zinc-300">Com API Key</td>
-                  <td class="py-3 px-4"><code class="text-emerald-400">500</code></td>
+                  <td class="py-3 px-4"><code class="text-emerald-400">60</code></td>
                   <td class="py-3 px-4 text-zinc-500">1 minuto</td>
                 </tr>
                 <tr>
                   <td class="py-3 px-4 text-zinc-300">Rotas de referência <span class="text-zinc-600">(CNAEs,
                       Estados...)</span></td>
-                  <td class="py-3 px-4"><code class="text-blue-400">1.000</code></td>
+                  <td class="py-3 px-4"><code class="text-blue-400">200</code></td>
                   <td class="py-3 px-4 text-zinc-500">1 minuto</td>
                 </tr>
               </tbody>
@@ -378,6 +383,10 @@
                 <tr>
                   <td class="py-3 px-4"><code class="text-yellow-400">401</code></td>
                   <td class="py-3 px-4 text-zinc-400">Não autenticado — API Key ausente ou inválida</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4"><code class="text-yellow-400">403</code></td>
+                  <td class="py-3 px-4 text-zinc-400">Acesso negado — requisição identificada como bot ou scraper</td>
                 </tr>
                 <tr>
                   <td class="py-3 px-4"><code class="text-yellow-400">404</code></td>
