@@ -151,6 +151,9 @@
             <a href="#detalhes-empresa"
               class="sidebar-link block px-3 py-1.5 text-sm text-zinc-400 border-l-2 border-transparent rounded-r-md transition-all">Detalhes
               da empresa</a>
+            <a href="#detalhes-cnpj"
+              class="sidebar-link block px-3 py-1.5 text-sm text-zinc-400 border-l-2 border-transparent rounded-r-md transition-all">Detalhes
+              por CNPJ</a>
           </div>
         </div>
 
@@ -773,6 +776,142 @@
             <li class="flex items-center gap-2"><i class="ri-check-line text-emerald-500 text-xs"></i> Dados do Simples
               Nacional / MEI</li>
           </ul>
+        </section>
+
+        <!-- Detalhes por CNPJ -->
+        <section id="detalhes-cnpj" class="mb-20">
+          <div class="flex items-center gap-3 mb-4">
+            <span
+              class="text-xs font-bold font-mono px-2.5 py-1 rounded-md bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">GET</span>
+            <h2 class="text-2xl font-bold text-white">Detalhes da empresa por CNPJ</h2>
+          </div>
+          <p class="text-zinc-400 mb-2">Retorna informações completas de uma empresa a partir do CNPJ. Aceita CNPJ com ou sem formatação (pontos, barras e hífens são removidos automaticamente).</p>
+          <code
+            class="text-sm font-mono text-emerald-400 bg-zinc-900 px-3 py-1.5 rounded-lg border border-zinc-800 inline-block mb-6">/empresas/cnpj/:cnpj</code>
+
+          <h3 class="text-sm font-bold text-white mb-3 mt-8">Path Parameters</h3>
+          <div class="overflow-hidden rounded-xl border border-zinc-800 mb-6">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="bg-zinc-900/50 border-b border-zinc-800">
+                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Parâmetro</th>
+                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Tipo</th>
+                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Descrição</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="py-3 px-4"><code class="text-emerald-400">cnpj</code></td>
+                  <td class="py-3 px-4 text-zinc-500">string</td>
+                  <td class="py-3 px-4 text-zinc-400">CNPJ da empresa (ex: <code class="text-zinc-300">06990590000123</code> ou <code class="text-zinc-300">06.990.590/0001-23</code>)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="code-window rounded-2xl bg-zinc-900 border border-zinc-800 overflow-hidden shadow-2xl mb-4">
+            <div class="flex items-center justify-between px-4 py-3 bg-zinc-900/80 border-b border-zinc-800">
+              <div class="flex items-center gap-3">
+                <div class="flex gap-1.5">
+                  <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
+                  <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
+                  <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
+                </div>
+                <span class="text-xs text-zinc-500 font-mono">GET /empresas/cnpj/:cnpj</span>
+              </div>
+              <button onclick="copyCode(this)"
+                class="copy-btn text-xs text-zinc-500 hover:text-zinc-300 transition-colors flex items-center gap-1">
+                <i class="ri-file-copy-line"></i> Copiar
+              </button>
+            </div>
+            <div class="p-5 font-mono text-sm leading-relaxed overflow-x-auto">
+              <code>
+                <div><span class="text-yellow-300">curl</span> <span class="text-emerald-400">'https://api.buscalead.com/v1/empresas/cnpj/06990590000123'</span> \</div>
+                <div class="pl-4"><span class="text-blue-400">-H</span> <span class="text-emerald-400">'Authorization: ApiKey sua_api_key_aqui'</span></div>
+              </code>
+            </div>
+          </div>
+
+          <!-- Exemplo response -->
+          <div class="code-window rounded-2xl bg-zinc-900 border border-zinc-800 overflow-hidden shadow-2xl mb-6">
+            <div class="flex items-center justify-between px-4 py-3 bg-zinc-900/80 border-b border-zinc-800">
+              <div class="flex items-center gap-3">
+                <div class="flex gap-1.5">
+                  <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
+                  <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
+                  <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
+                </div>
+                <span class="text-xs text-zinc-500 font-mono">Resposta — 200 OK</span>
+              </div>
+            </div>
+            <div class="p-5 font-mono text-sm leading-relaxed overflow-x-auto">
+              <code>
+                <div class="text-zinc-500">{</div>
+                <div class="pl-4"><span class="text-blue-300">"cnpj_completo"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"06990590000123"</span><span class="text-zinc-500">,</span></div>
+                <div class="pl-4"><span class="text-blue-300">"nome_fantasia"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"GOOGLE"</span><span class="text-zinc-500">,</span></div>
+                <div class="pl-4"><span class="text-blue-300">"slug"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"google-brasil-internet-ltda-06990590000123"</span><span class="text-zinc-500">,</span></div>
+                <div class="pl-4"><span class="text-blue-300">"situacao_cadastral"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"02"</span><span class="text-zinc-500">,</span></div>
+                <div class="pl-4"><span class="text-blue-300">"telefone_1"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"30444000"</span><span class="text-zinc-500">,</span></div>
+                <div class="pl-4"><span class="text-blue-300">"ddd_1"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"11"</span><span class="text-zinc-500">,</span></div>
+                <div class="pl-4"><span class="text-blue-300">"correio_eletronico"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"contato@google.com.br"</span><span class="text-zinc-500">,</span></div>
+                <div class="pl-4"><span class="text-blue-300">"uf"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"SP"</span><span class="text-zinc-500">,</span></div>
+                <div class="pl-4"><span class="text-blue-300">"cnae_fiscal_principal"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"6311900"</span><span class="text-zinc-500">,</span></div>
+                <div class="pl-4"><span class="text-blue-300">"empresa"</span><span class="text-zinc-500">: {</span></div>
+                <div class="pl-6"><span class="text-blue-300">"razao_social"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"GOOGLE BRASIL INTERNET LTDA"</span><span class="text-zinc-500">,</span></div>
+                <div class="pl-6"><span class="text-blue-300">"capital_social"</span><span class="text-zinc-500">:</span> <span class="text-yellow-300">1000000.00</span><span class="text-zinc-500">,</span></div>
+                <div class="pl-6"><span class="text-blue-300">"porte"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"DEMAIS"</span><span class="text-zinc-500">,</span></div>
+                <div class="pl-6"><span class="text-blue-300">"natureza_juridica_ref"</span><span class="text-zinc-500">: {</span></div>
+                <div class="pl-8"><span class="text-blue-300">"descricao"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"Sociedade Empresária Limitada"</span><span class="text-zinc-500">,</span></div>
+                <div class="pl-8"><span class="text-blue-300">"codigo"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"2062"</span></div>
+                <div class="pl-6"><span class="text-zinc-500">},</span></div>
+                <div class="pl-6"><span class="text-blue-300">"dados_simples"</span><span class="text-zinc-500">:</span> <span class="text-zinc-500">null,</span></div>
+                <div class="pl-6"><span class="text-blue-300">"socios"</span><span class="text-zinc-500">: [</span></div>
+                <div class="pl-8"><span class="text-zinc-500">{</span></div>
+                <div class="pl-10"><span class="text-blue-300">"nome_socio"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"NOME DO SOCIO"</span><span class="text-zinc-500">,</span></div>
+                <div class="pl-10"><span class="text-blue-300">"cnpj_cpf_do_socio"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"***000000**"</span><span class="text-zinc-500">,</span></div>
+                <div class="pl-10"><span class="text-blue-300">"qualificacao_do_socio"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"49"</span><span class="text-zinc-500">,</span></div>
+                <div class="pl-10"><span class="text-blue-300">"qualificacao_ref"</span><span class="text-zinc-500">: {</span></div>
+                <div class="pl-12"><span class="text-blue-300">"codigo"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"49"</span><span class="text-zinc-500">,</span></div>
+                <div class="pl-12"><span class="text-blue-300">"descricao"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"Sócio-Administrador"</span></div>
+                <div class="pl-10"><span class="text-zinc-500">},</span></div>
+                <div class="pl-10"><span class="text-blue-300">"data_entrada_sociedade"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"2020-01-15"</span><span class="text-zinc-500">,</span></div>
+                <div class="pl-10"><span class="text-blue-300">"faixa_etaria"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"4"</span></div>
+                <div class="pl-8"><span class="text-zinc-500">}</span></div>
+                <div class="pl-6"><span class="text-zinc-500">]</span></div>
+                <div class="pl-4"><span class="text-zinc-500">},</span></div>
+                <div class="pl-4"><span class="text-blue-300">"cnae_principal_ref"</span><span class="text-zinc-500">: {</span></div>
+                <div class="pl-6"><span class="text-blue-300">"descricao"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"Tratamento de dados, provedores de serviços de aplicação e serviços de hospedagem na internet"</span></div>
+                <div class="pl-4"><span class="text-zinc-500">},</span></div>
+                <div class="pl-4"><span class="text-blue-300">"municipio_ref"</span><span class="text-zinc-500">: {</span></div>
+                <div class="pl-6"><span class="text-blue-300">"descricao"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"SAO PAULO"</span></div>
+                <div class="pl-4"><span class="text-zinc-500">},</span></div>
+                <div class="pl-4"><span class="text-blue-300">"cnae_fiscal_secundaria_descricoes"</span><span class="text-zinc-500">: [</span></div>
+                <div class="pl-6"><span class="text-zinc-500">{</span></div>
+                <div class="pl-8"><span class="text-blue-300">"codigo"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"6319400"</span><span class="text-zinc-500">,</span></div>
+                <div class="pl-8"><span class="text-blue-300">"descricao"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"Portais, provedores de conteúdo e outros serviços de informação na internet"</span></div>
+                <div class="pl-6"><span class="text-zinc-500">}</span></div>
+                <div class="pl-4"><span class="text-zinc-500">]</span></div>
+                <div class="text-zinc-500">}</div>
+              </code>
+            </div>
+          </div>
+
+          <p class="text-sm text-zinc-500 mt-4 mb-2">A resposta inclui:</p>
+          <ul class="space-y-1.5 text-sm text-zinc-400 mb-6">
+            <li class="flex items-center gap-2"><i class="ri-check-line text-emerald-500 text-xs"></i> Dados cadastrais completos (CNPJ, razão social, nome fantasia)</li>
+            <li class="flex items-center gap-2"><i class="ri-check-line text-emerald-500 text-xs"></i> Capital social, porte, natureza jurídica</li>
+            <li class="flex items-center gap-2"><i class="ri-check-line text-emerald-500 text-xs"></i> Telefones, e-mail, endereço completo</li>
+            <li class="flex items-center gap-2"><i class="ri-check-line text-emerald-500 text-xs"></i> Lista de sócios com qualificação</li>
+            <li class="flex items-center gap-2"><i class="ri-check-line text-emerald-500 text-xs"></i> CNAE principal e secundários com descrição</li>
+            <li class="flex items-center gap-2"><i class="ri-check-line text-emerald-500 text-xs"></i> Dados do Simples Nacional / MEI</li>
+          </ul>
+
+          <div class="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/20">
+            <div class="flex items-start gap-3">
+              <i class="ri-information-line text-emerald-500 mt-0.5"></i>
+              <p class="text-sm text-zinc-400">O CNPJ é sanitizado automaticamente — caracteres não numéricos são removidos. Os resultados são cacheados por 30 dias para melhor performance.</p>
+            </div>
+          </div>
         </section>
 
         <!-- Divider -->
