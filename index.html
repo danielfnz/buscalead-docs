@@ -185,6 +185,7 @@
           <p class="text-lg text-zinc-400 mb-8 max-w-2xl">
             Acesse nossa base de <strong class="text-white">+69 milhões de empresas brasileiras</strong> via API REST.
             Consulte CNPJs, busque por filtros avançados e enriqueça seus dados — direto no seu sistema.
+            O acesso via API Key requer um <strong class="text-white">plano ativo</strong>.
           </p>
 
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
@@ -226,6 +227,13 @@
             Você pode gerar sua API Key na <a href="https://buscalead.com/office/settings"
               class="text-emerald-500 hover:underline">página de configurações</a> da plataforma.
           </p>
+
+          <div class="mb-6 p-4 rounded-xl bg-yellow-500/5 border border-yellow-500/20">
+            <div class="flex items-start gap-3">
+              <i class="ri-error-warning-line text-yellow-500 mt-0.5"></i>
+              <p class="text-sm text-zinc-400"><strong class="text-yellow-400">Assinatura obrigatoria:</strong> O uso da API via API Key requer uma assinatura ativa. Requisicoes com API Key sem assinatura retornam <code class="text-yellow-400 bg-zinc-900 px-1.5 py-0.5 rounded text-xs">402 Payment Required</code>. <a href="https://buscalead.com/office/subscription" class="text-emerald-500 hover:underline">Assine aqui</a>.</p>
+            </div>
+          </div>
 
           <!-- Code Window -->
           <div class="code-window rounded-2xl bg-zinc-900 border border-zinc-800 overflow-hidden shadow-2xl mb-6">
@@ -386,6 +394,10 @@
                 <tr>
                   <td class="py-3 px-4"><code class="text-yellow-400">401</code></td>
                   <td class="py-3 px-4 text-zinc-400">Não autenticado — API Key ausente ou inválida</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4"><code class="text-yellow-400">402</code></td>
+                  <td class="py-3 px-4 text-zinc-400">Assinatura ativa necessária para uso via API Key</td>
                 </tr>
                 <tr>
                   <td class="py-3 px-4"><code class="text-yellow-400">403</code></td>
