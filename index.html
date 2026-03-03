@@ -669,6 +669,16 @@
                   <td class="py-3 px-4 text-zinc-400">Apenas matrizes</td>
                 </tr>
                 <tr>
+                  <td class="py-3 px-4"><code class="text-emerald-400">filters.ignorar_ja_importados</code></td>
+                  <td class="py-3 px-4 text-zinc-500">boolean</td>
+                  <td class="py-3 px-4 text-zinc-400">Exclui dos resultados os leads já importados pela organização. Requer <code class="text-emerald-400">organization_id</code></td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4"><code class="text-emerald-400">organization_id</code></td>
+                  <td class="py-3 px-4 text-zinc-500">string</td>
+                  <td class="py-3 px-4 text-zinc-400">ID da organização. Obrigatório quando <code class="text-emerald-400">filters.ignorar_ja_importados</code> é <code class="text-yellow-300">true</code></td>
+                </tr>
+                <tr>
                   <td class="py-3 px-4"><code class="text-emerald-400">page</code></td>
                   <td class="py-3 px-4 text-zinc-500">number</td>
                   <td class="py-3 px-4 text-zinc-400">Número da página (padrão: 0)</td>
@@ -708,8 +718,10 @@
                 <div class="pl-10"><span class="text-blue-300">"cnae_fiscal_principal"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">["6209100"]</span><span class="text-zinc-500">,</span></div>
                 <div class="pl-10"><span class="text-blue-300">"estado"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">["SP"]</span><span class="text-zinc-500">,</span></div>
                 <div class="pl-10"><span class="text-blue-300">"situacao_cadastral"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">["01"]</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-10"><span class="text-blue-300">"contem_email"</span><span class="text-zinc-500">:</span> <span class="text-yellow-300">true</span></div>
+                <div class="pl-10"><span class="text-blue-300">"contem_email"</span><span class="text-zinc-500">:</span> <span class="text-yellow-300">true</span><span class="text-zinc-500">,</span></div>
+                <div class="pl-10"><span class="text-blue-300">"ignorar_ja_importados"</span><span class="text-zinc-500">:</span> <span class="text-yellow-300">true</span></div>
                 <div class="pl-8"><span class="text-zinc-500">},</span></div>
+                <div class="pl-8"><span class="text-blue-300">"organization_id"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"uuid-da-organizacao"</span><span class="text-zinc-500">,</span></div>
                 <div class="pl-8"><span class="text-blue-300">"page"</span><span class="text-zinc-500">:</span> <span class="text-yellow-300">0</span><span class="text-zinc-500">,</span></div>
                 <div class="pl-8"><span class="text-blue-300">"limit"</span><span class="text-zinc-500">:</span> <span class="text-yellow-300">10</span></div>
                 <div class="pl-4"><span class="text-emerald-400">}'</span></div>
