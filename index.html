@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BuscaLead API — Documentação para Desenvolvedores</title>
+  <title>BuscaLead API - Documentação para Desenvolvedores</title>
   <meta name="description"
     content="Documentação da API REST do BuscaLead. Consulte +69 milhões de empresas brasileiras, filtre por CNAE, estado, porte e mais.">
   <script src="https://cdn.tailwindcss.com"></script>
@@ -184,7 +184,7 @@
           <h1 class="text-4xl font-extrabold text-white mb-4">API da BuscaLead</h1>
           <p class="text-lg text-zinc-400 mb-8 max-w-2xl">
             Acesse nossa base de <strong class="text-white">+69 milhões de empresas brasileiras</strong> via API REST.
-            Consulte CNPJs, busque por filtros avançados e enriqueça seus dados — direto no seu sistema.
+            Consulte CNPJs, busque por filtros avançados e enriqueça seus dados - direto no seu sistema.
             O acesso via API Key requer um <strong class="text-white">plano ativo</strong>.
           </p>
 
@@ -231,7 +231,11 @@
           <div class="mb-6 p-4 rounded-xl bg-yellow-500/5 border border-yellow-500/20">
             <div class="flex items-start gap-3">
               <i class="ri-error-warning-line text-yellow-500 mt-0.5"></i>
-              <p class="text-sm text-zinc-400"><strong class="text-yellow-400">Assinatura obrigatoria:</strong> O uso da API via API Key requer uma assinatura ativa. Requisicoes com API Key sem assinatura retornam <code class="text-yellow-400 bg-zinc-900 px-1.5 py-0.5 rounded text-xs">402 Payment Required</code>. <a href="https://buscalead.com/office/subscription" class="text-emerald-500 hover:underline">Assine aqui</a>.</p>
+              <p class="text-sm text-zinc-400"><strong class="text-yellow-400">Assinatura obrigatoria:</strong> O uso da
+                API via API Key requer uma assinatura ativa. Requisicoes com API Key sem assinatura retornam <code
+                  class="text-yellow-400 bg-zinc-900 px-1.5 py-0.5 rounded text-xs">402 Payment Required</code>. <a
+                  href="https://buscalead.com/office/subscription" class="text-emerald-500 hover:underline">Assine
+                  aqui</a>.</p>
             </div>
           </div>
 
@@ -304,12 +308,14 @@
               </thead>
               <tbody class="divide-y divide-zinc-800/50">
                 <tr>
-                  <td class="py-3 px-4 text-zinc-300">Sem autenticação <span class="text-zinc-600">(busca de empresas)</span></td>
+                  <td class="py-3 px-4 text-zinc-300">Sem autenticação <span class="text-zinc-600">(busca de
+                      empresas)</span></td>
                   <td class="py-3 px-4"><code class="text-yellow-400">15</code></td>
                   <td class="py-3 px-4 text-zinc-500">1 minuto</td>
                 </tr>
                 <tr>
-                  <td class="py-3 px-4 text-zinc-300">Sem autenticação <span class="text-zinc-600">(demais rotas)</span></td>
+                  <td class="py-3 px-4 text-zinc-300">Sem autenticação <span class="text-zinc-600">(demais rotas)</span>
+                  </td>
                   <td class="py-3 px-4"><code class="text-yellow-400">20</code></td>
                   <td class="py-3 px-4 text-zinc-500">1 minuto</td>
                 </tr>
@@ -393,7 +399,7 @@
                 </tr>
                 <tr>
                   <td class="py-3 px-4"><code class="text-yellow-400">401</code></td>
-                  <td class="py-3 px-4 text-zinc-400">Não autenticado — API Key ausente ou inválida</td>
+                  <td class="py-3 px-4 text-zinc-400">Não autenticado - API Key ausente ou inválida</td>
                 </tr>
                 <tr>
                   <td class="py-3 px-4"><code class="text-yellow-400">402</code></td>
@@ -401,7 +407,7 @@
                 </tr>
                 <tr>
                   <td class="py-3 px-4"><code class="text-yellow-400">403</code></td>
-                  <td class="py-3 px-4 text-zinc-400">Acesso negado — requisição identificada como bot ou scraper</td>
+                  <td class="py-3 px-4 text-zinc-400">Acesso negado - requisição identificada como bot ou scraper</td>
                 </tr>
                 <tr>
                   <td class="py-3 px-4"><code class="text-yellow-400">404</code></td>
@@ -456,7 +462,7 @@
 
         <!-- Divider -->
         <div class="border-t border-zinc-800/50 my-16"></div>
-        <h2 class="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-10">Endpoints — Empresas</h2>
+        <h2 class="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-10">Endpoints - Empresas</h2>
 
         <!-- Busca Rápida -->
         <section id="busca-rapida" class="mb-20">
@@ -486,7 +492,7 @@
                 <tr>
                   <td class="py-3 px-4"><code class="text-emerald-400">query</code></td>
                   <td class="py-3 px-4 text-zinc-500">string</td>
-                  <td class="py-3 px-4 text-zinc-600">—</td>
+                  <td class="py-3 px-4 text-zinc-600">-</td>
                   <td class="py-3 px-4 text-zinc-400">Termo de busca (razão social, nome fantasia, CNPJ)</td>
                 </tr>
                 <tr>
@@ -539,7 +545,7 @@
                   <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
                   <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
                 </div>
-                <span class="text-xs text-zinc-500 font-mono">Resposta — 200 OK</span>
+                <span class="text-xs text-zinc-500 font-mono">Resposta - 200 OK</span>
               </div>
             </div>
             <div class="p-5 font-mono text-sm leading-relaxed overflow-x-auto">
@@ -671,12 +677,15 @@
                 <tr>
                   <td class="py-3 px-4"><code class="text-emerald-400">filters.ignorar_ja_importados</code></td>
                   <td class="py-3 px-4 text-zinc-500">boolean</td>
-                  <td class="py-3 px-4 text-zinc-400">Exclui dos resultados os leads já importados pela organização. Requer <code class="text-emerald-400">organization_id</code></td>
+                  <td class="py-3 px-4 text-zinc-400">Exclui dos resultados os leads já importados pela organização.
+                    Requer <code class="text-emerald-400">organization_id</code></td>
                 </tr>
                 <tr>
                   <td class="py-3 px-4"><code class="text-emerald-400">organization_id</code></td>
                   <td class="py-3 px-4 text-zinc-500">string</td>
-                  <td class="py-3 px-4 text-zinc-400">ID da organização. Obrigatório quando <code class="text-emerald-400">filters.ignorar_ja_importados</code> é <code class="text-yellow-300">true</code></td>
+                  <td class="py-3 px-4 text-zinc-400">ID da organização. Obrigatório quando <code
+                      class="text-emerald-400">filters.ignorar_ja_importados</code> é <code
+                      class="text-yellow-300">true</code></td>
                 </tr>
                 <tr>
                   <td class="py-3 px-4"><code class="text-emerald-400">page</code></td>
@@ -809,7 +818,8 @@
               class="text-xs font-bold font-mono px-2.5 py-1 rounded-md bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">GET</span>
             <h2 class="text-2xl font-bold text-white">Detalhes da empresa por CNPJ</h2>
           </div>
-          <p class="text-zinc-400 mb-2">Retorna informações completas de uma empresa a partir do CNPJ. Aceita CNPJ com ou sem formatação (pontos, barras e hífens são removidos automaticamente).</p>
+          <p class="text-zinc-400 mb-2">Retorna informações completas de uma empresa a partir do CNPJ. Aceita CNPJ com
+            ou sem formatação (pontos, barras e hífens são removidos automaticamente).</p>
           <code
             class="text-sm font-mono text-emerald-400 bg-zinc-900 px-3 py-1.5 rounded-lg border border-zinc-800 inline-block mb-6">/empresas/cnpj/:cnpj</code>
 
@@ -827,7 +837,9 @@
                 <tr>
                   <td class="py-3 px-4"><code class="text-emerald-400">cnpj</code></td>
                   <td class="py-3 px-4 text-zinc-500">string</td>
-                  <td class="py-3 px-4 text-zinc-400">CNPJ da empresa (ex: <code class="text-zinc-300">06990590000123</code> ou <code class="text-zinc-300">06.990.590/0001-23</code>)</td>
+                  <td class="py-3 px-4 text-zinc-400">CNPJ da empresa (ex: <code
+                      class="text-zinc-300">06990590000123</code> ou <code
+                      class="text-zinc-300">06.990.590/0001-23</code>)</td>
                 </tr>
               </tbody>
             </table>
@@ -865,7 +877,7 @@
                   <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
                   <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
                 </div>
-                <span class="text-xs text-zinc-500 font-mono">Resposta — 200 OK</span>
+                <span class="text-xs text-zinc-500 font-mono">Resposta - 200 OK</span>
               </div>
             </div>
             <div class="p-5 font-mono text-sm leading-relaxed overflow-x-auto">
@@ -922,25 +934,32 @@
 
           <p class="text-sm text-zinc-500 mt-4 mb-2">A resposta inclui:</p>
           <ul class="space-y-1.5 text-sm text-zinc-400 mb-6">
-            <li class="flex items-center gap-2"><i class="ri-check-line text-emerald-500 text-xs"></i> Dados cadastrais completos (CNPJ, razão social, nome fantasia)</li>
-            <li class="flex items-center gap-2"><i class="ri-check-line text-emerald-500 text-xs"></i> Capital social, porte, natureza jurídica</li>
-            <li class="flex items-center gap-2"><i class="ri-check-line text-emerald-500 text-xs"></i> Telefones, e-mail, endereço completo</li>
-            <li class="flex items-center gap-2"><i class="ri-check-line text-emerald-500 text-xs"></i> Lista de sócios com qualificação</li>
-            <li class="flex items-center gap-2"><i class="ri-check-line text-emerald-500 text-xs"></i> CNAE principal e secundários com descrição</li>
-            <li class="flex items-center gap-2"><i class="ri-check-line text-emerald-500 text-xs"></i> Dados do Simples Nacional / MEI</li>
+            <li class="flex items-center gap-2"><i class="ri-check-line text-emerald-500 text-xs"></i> Dados cadastrais
+              completos (CNPJ, razão social, nome fantasia)</li>
+            <li class="flex items-center gap-2"><i class="ri-check-line text-emerald-500 text-xs"></i> Capital social,
+              porte, natureza jurídica</li>
+            <li class="flex items-center gap-2"><i class="ri-check-line text-emerald-500 text-xs"></i> Telefones,
+              e-mail, endereço completo</li>
+            <li class="flex items-center gap-2"><i class="ri-check-line text-emerald-500 text-xs"></i> Lista de sócios
+              com qualificação</li>
+            <li class="flex items-center gap-2"><i class="ri-check-line text-emerald-500 text-xs"></i> CNAE principal e
+              secundários com descrição</li>
+            <li class="flex items-center gap-2"><i class="ri-check-line text-emerald-500 text-xs"></i> Dados do Simples
+              Nacional / MEI</li>
           </ul>
 
           <div class="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/20">
             <div class="flex items-start gap-3">
               <i class="ri-information-line text-emerald-500 mt-0.5"></i>
-              <p class="text-sm text-zinc-400">O CNPJ é sanitizado automaticamente — caracteres não numéricos são removidos. Os resultados são cacheados por 30 dias para melhor performance.</p>
+              <p class="text-sm text-zinc-400">O CNPJ é sanitizado automaticamente - caracteres não numéricos são
+                removidos. Os resultados são cacheados por 30 dias para melhor performance.</p>
             </div>
           </div>
         </section>
 
         <!-- Divider -->
         <div class="border-t border-zinc-800/50 my-16"></div>
-        <h2 class="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-10">Endpoints — Referência</h2>
+        <h2 class="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-10">Endpoints - Referência</h2>
 
         <!-- CNAEs -->
         <section id="cnaes" class="mb-20">
@@ -968,7 +987,7 @@
                 <tr>
                   <td class="py-3 px-4"><code class="text-emerald-400">search</code></td>
                   <td class="py-3 px-4 text-zinc-500">string</td>
-                  <td class="py-3 px-4 text-zinc-600">—</td>
+                  <td class="py-3 px-4 text-zinc-600">-</td>
                   <td class="py-3 px-4 text-zinc-400">Busca por código ou descrição</td>
                 </tr>
                 <tr>
@@ -1085,7 +1104,8 @@
             class="text-sm font-mono text-emerald-400 bg-zinc-900 px-3 py-1.5 rounded-lg border border-zinc-800 inline-block mb-6">/natureza_juridica</code>
 
           <p class="text-zinc-500 text-sm">Mesmos parâmetros de paginação: <code class="text-zinc-400">search</code>,
-            <code class="text-zinc-400">offset</code>, <code class="text-zinc-400">limit</code>.</p>
+            <code class="text-zinc-400">offset</code>, <code class="text-zinc-400">limit</code>.
+          </p>
         </section>
 
 
