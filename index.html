@@ -172,6 +172,23 @@
           </div>
         </div>
 
+        <!-- Webhooks de entrada -->
+        <div>
+          <h4 class="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-3 px-3">Webhooks de entrada</h4>
+          <div class="space-y-0.5">
+            <a href="#webhooks-visao-geral"
+              class="sidebar-link block px-3 py-1.5 text-sm text-zinc-400 border-l-2 border-transparent rounded-r-md transition-all">Visão geral</a>
+            <a href="#webhooks-assinatura"
+              class="sidebar-link block px-3 py-1.5 text-sm text-zinc-400 border-l-2 border-transparent rounded-r-md transition-all">Assinatura (HMAC)</a>
+            <a href="#webhooks-payload"
+              class="sidebar-link block px-3 py-1.5 text-sm text-zinc-400 border-l-2 border-transparent rounded-r-md transition-all">Payload</a>
+            <a href="#webhooks-deduplicacao"
+              class="sidebar-link block px-3 py-1.5 text-sm text-zinc-400 border-l-2 border-transparent rounded-r-md transition-all">Deduplicação</a>
+            <a href="#webhooks-respostas"
+              class="sidebar-link block px-3 py-1.5 text-sm text-zinc-400 border-l-2 border-transparent rounded-r-md transition-all">Respostas e limites</a>
+          </div>
+        </div>
+
       </nav>
     </aside>
 
@@ -1108,6 +1125,595 @@
           </p>
         </section>
 
+        <!-- Divider -->
+        <div class="border-t border-zinc-800/50 my-16"></div>
+        <h2 class="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-10">Webhooks de entrada</h2>
+
+        <!-- Webhooks de entrada -->
+        <section id="webhooks-visao-geral" class="mb-20">
+          <div class="flex items-center gap-3 mb-4">
+            <span
+              class="text-xs font-bold font-mono px-2.5 py-1 rounded-md bg-blue-500/10 text-blue-400 border border-blue-500/20">POST</span>
+            <h2 class="text-2xl font-bold text-white">Receber leads por webhook</h2>
+          </div>
+          <p class="text-zinc-400 mb-2">Receba leads de outros sistemas (ERP, site, formulário, CRM) automaticamente.
+            Cada webhook tem uma URL própria e um secret: a cada evento assinado que o seu sistema envia, o BuscaLead
+            cria ou atualiza o lead na sua organização e garante o card no funil.</p>
+          <code
+            class="text-sm font-mono text-emerald-400 bg-zinc-900 px-3 py-1.5 rounded-lg border border-zinc-800 inline-block mb-6">/webhook-integrations/{id}/events</code>
+
+          <div class="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/20 mb-6">
+            <div class="flex items-start gap-3">
+              <i class="ri-information-line text-emerald-500 mt-0.5"></i>
+              <div>
+                <p class="text-sm text-zinc-300 font-medium mb-1">URL do webhook</p>
+                <code
+                  class="text-emerald-400 text-sm font-mono break-all">https://api.buscalead.com/v1/webhook-integrations/{id}/events</code>
+                <p class="text-sm text-zinc-500 mt-2">O <code class="text-zinc-400">{id}</code> é gerado ao criar o
+                  webhook. Copie a URL pronta em <strong class="text-zinc-300">Configurações → Integrações → Webhooks
+                    personalizados</strong>.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-6 p-4 rounded-xl bg-yellow-500/5 border border-yellow-500/20">
+            <div class="flex items-start gap-3">
+              <i class="ri-error-warning-line text-yellow-500 mt-0.5"></i>
+              <p class="text-sm text-zinc-400"><strong class="text-yellow-400">Planos pagos:</strong> webhooks
+                personalizados estão disponíveis nos planos Starter, Plus, Business e Pro. <strong
+                  class="text-yellow-400">Sem API Key:</strong> esta rota não usa o header <code
+                  class="text-yellow-400 bg-zinc-900 px-1.5 py-0.5 rounded text-xs">Authorization</code>; quem
+                autentica a requisição é a assinatura do corpo (próxima seção).</p>
+            </div>
+          </div>
+
+          <h3 class="text-sm font-bold text-white mb-3 mt-8">Como configurar</h3>
+          <ol class="list-decimal pl-5 space-y-2 text-sm text-zinc-400 marker:text-zinc-600 mb-6">
+            <li>No BuscaLead, abra <strong class="text-zinc-300">Configurações → Integrações</strong> e, em <strong
+                class="text-zinc-300">Webhooks personalizados</strong>, clique em <strong class="text-zinc-300">Novo
+                webhook</strong>. Apenas proprietário, administrador e gerente da organização criam e gerenciam webhooks.
+            </li>
+            <li>Dê um nome ao webhook, por exemplo o nome do sistema que vai enviar os leads. Ele aparece na origem de
+              cada lead recebido: <code class="text-emerald-400 bg-zinc-900 px-1.5 py-0.5 rounded text-xs">Webhook:
+                &lt;nome&gt;</code>.</li>
+            <li>Copie a <strong class="text-zinc-300">URL</strong> e o <strong class="text-zinc-300">secret</strong>. O
+              secret é exibido <strong class="text-zinc-300">uma única vez</strong>, com 43 caracteres (letras, números,
+              <code class="text-zinc-400">-</code> e <code class="text-zinc-400">_</code>). Se perder, use <strong
+                class="text-zinc-300">Regenerar secret</strong>: o secret anterior deixa de valer imediatamente.</li>
+            <li>No seu sistema, envie um <code class="text-zinc-400">POST</code> JSON assinado (veja as próximas seções)
+              a cada novo cadastro.</li>
+          </ol>
+
+          <h3 class="text-sm font-bold text-white mb-3 mt-8">O que acontece a cada evento</h3>
+          <ul class="list-disc pl-5 space-y-2 text-sm text-zinc-400 marker:text-zinc-600 mb-6">
+            <li>O lead é criado na sua base, ou atualizado se já existir (veja <a href="#webhooks-deduplicacao"
+                class="text-emerald-500 hover:underline">Deduplicação</a>).</li>
+            <li>O card do lead entra na primeira etapa do pipeline padrão da organização.</li>
+            <li>O webhook registra a <strong class="text-zinc-300">última recepção</strong>, exibida no painel.</li>
+          </ul>
+
+          <div class="p-4 rounded-xl bg-yellow-500/5 border border-yellow-500/20">
+            <div class="flex items-start gap-3">
+              <i class="ri-shield-keyhole-line text-yellow-500 mt-0.5"></i>
+              <p class="text-sm text-zinc-400"><strong class="text-yellow-400">Envie sempre do seu servidor.</strong>
+                O secret nunca deve aparecer no navegador, em apps ou em repositórios. Teste com dados fictícios: cada
+                evento aceito cria um lead de verdade na sua base.</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="webhooks-assinatura" class="mb-20">
+          <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-3">
+            <i class="ri-shield-check-line text-emerald-500"></i> Assinatura (HMAC)
+          </h2>
+          <p class="text-zinc-400 mb-6">
+            Toda requisição precisa de dois headers. A assinatura prova que o corpo veio de quem conhece o secret e que
+            não foi alterado no caminho.
+          </p>
+
+          <div class="overflow-hidden rounded-xl border border-zinc-800 mb-6">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="bg-zinc-900/50 border-b border-zinc-800">
+                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Header</th>
+                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Valor</th>
+                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Obrigatório</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-zinc-800/50">
+                <tr>
+                  <td class="py-3 px-4"><code class="text-emerald-400">Content-Type</code></td>
+                  <td class="py-3 px-4"><code class="text-zinc-300">application/json</code> <span
+                      class="text-zinc-600">(pode incluir <code class="text-zinc-500">; charset=utf-8</code>)</span></td>
+                  <td class="py-3 px-4 text-zinc-400">Sim</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4"><code class="text-emerald-400">X-Webhook-Signature</code></td>
+                  <td class="py-3 px-4"><code class="text-zinc-300">sha256=&lt;assinatura em hexadecimal&gt;</code></td>
+                  <td class="py-3 px-4 text-zinc-400">Sim</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3 class="text-sm font-bold text-white mb-3 mt-8">Como calcular</h3>
+          <ol class="list-decimal pl-5 space-y-2 text-sm text-zinc-400 marker:text-zinc-600 mb-6">
+            <li>Monte o corpo JSON como texto (string) <strong class="text-zinc-300">uma única vez</strong>.</li>
+            <li>Calcule o <strong class="text-zinc-300">HMAC-SHA256</strong> desse corpo, usando o secret como chave, e
+              converta o resultado para hexadecimal (64 caracteres, em maiúsculas ou minúsculas).</li>
+            <li>Envie o resultado no header <code class="text-zinc-400">X-Webhook-Signature</code>, com o prefixo <code
+                class="text-zinc-400">sha256=</code> em minúsculas.</li>
+            <li>Envie no corpo exatamente o mesmo texto que foi assinado.</li>
+          </ol>
+
+          <div class="mb-6 p-4 rounded-xl bg-yellow-500/5 border border-yellow-500/20">
+            <div class="flex items-start gap-3">
+              <i class="ri-error-warning-line text-yellow-500 mt-0.5"></i>
+              <div class="text-sm text-zinc-400">
+                <p class="mb-2"><strong class="text-yellow-400">Dois detalhes que mais causam 401:</strong></p>
+                <ul class="list-disc pl-5 space-y-1.5 marker:text-zinc-600">
+                  <li><strong class="text-zinc-300">A chave é o texto do secret, exatamente como exibido.</strong> Use a
+                    string como está. Não decodifique de base64 nem de base64url: a assinatura com a chave decodificada
+                    não confere.</li>
+                  <li><strong class="text-zinc-300">Assine os bytes exatos que você envia.</strong> Se o seu cliente HTTP
+                    reserializar o JSON depois de assinado (espaços, ordem das chaves, escape de acentos), a assinatura
+                    deixa de bater. Gere o texto, assine e envie esse mesmo texto.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Exemplo Node.js -->
+          <div class="code-window rounded-2xl bg-zinc-900 border border-zinc-800 overflow-hidden shadow-2xl mb-4">
+            <div class="flex items-center justify-between px-4 py-3 bg-zinc-900/80 border-b border-zinc-800">
+              <div class="flex items-center gap-3">
+                <div class="flex gap-1.5">
+                  <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
+                  <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
+                  <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
+                </div>
+                <span class="text-xs text-zinc-500 font-mono">Exemplo em Node.js 18+ (enviar-lead.mjs)</span>
+              </div>
+              <button onclick="copyCode(this)"
+                class="copy-btn text-xs text-zinc-500 hover:text-zinc-300 transition-colors flex items-center gap-1">
+                <i class="ri-file-copy-line"></i> Copiar
+              </button>
+            </div>
+            <div class="p-5 font-mono text-sm leading-relaxed overflow-x-auto">
+              <code class="block whitespace-pre"><span class="text-blue-400">import</span> { createHmac } <span class="text-blue-400">from</span> <span class="text-emerald-400">'node:crypto'</span>;
+
+<span class="text-blue-400">const</span> URL_DO_WEBHOOK = <span class="text-emerald-400">'https://api.buscalead.com/v1/webhook-integrations/SEU_ID/events'</span>;
+<span class="text-blue-400">const</span> SECRET = process.env.BUSCALEAD_WEBHOOK_SECRET; <span class="text-zinc-500">// texto do secret, exatamente como exibido</span>
+
+<span class="text-zinc-500">// Serialize UMA vez: assine e envie exatamente esta mesma string.</span>
+<span class="text-blue-400">const</span> body = JSON.stringify({
+  company: { cnpj: <span class="text-emerald-400">'12345678000190'</span>, razao_social: <span class="text-emerald-400">'Empresa Exemplo'</span> },
+  contact: { name: <span class="text-emerald-400">'Maria'</span>, email: <span class="text-emerald-400">'maria@exemplo.com'</span>, phone: <span class="text-emerald-400">'11987654321'</span> },
+  extra: { origem: <span class="text-emerald-400">'site'</span> },
+});
+
+<span class="text-blue-400">const</span> assinatura = createHmac(<span class="text-emerald-400">'sha256'</span>, SECRET).update(body).digest(<span class="text-emerald-400">'hex'</span>);
+
+<span class="text-blue-400">const</span> resposta = <span class="text-blue-400">await</span> fetch(URL_DO_WEBHOOK, {
+  method: <span class="text-emerald-400">'POST'</span>,
+  headers: {
+    <span class="text-emerald-400">'Content-Type'</span>: <span class="text-emerald-400">'application/json'</span>,
+    <span class="text-emerald-400">'X-Webhook-Signature'</span>: <span class="text-emerald-400">`sha256=${assinatura}`</span>,
+  },
+  body,
+});
+
+console.log(resposta.status, <span class="text-blue-400">await</span> resposta.text());</code>
+            </div>
+          </div>
+
+          <!-- Exemplo bash -->
+          <div class="code-window rounded-2xl bg-zinc-900 border border-zinc-800 overflow-hidden shadow-2xl">
+            <div class="flex items-center justify-between px-4 py-3 bg-zinc-900/80 border-b border-zinc-800">
+              <div class="flex items-center gap-3">
+                <div class="flex gap-1.5">
+                  <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
+                  <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
+                  <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
+                </div>
+                <span class="text-xs text-zinc-500 font-mono">Exemplo em bash (openssl + curl)</span>
+              </div>
+              <button onclick="copyCode(this)"
+                class="copy-btn text-xs text-zinc-500 hover:text-zinc-300 transition-colors flex items-center gap-1">
+                <i class="ri-file-copy-line"></i> Copiar
+              </button>
+            </div>
+            <div class="p-5 font-mono text-sm leading-relaxed overflow-x-auto">
+              <code class="block whitespace-pre">URL=<span class="text-emerald-400">'https://api.buscalead.com/v1/webhook-integrations/SEU_ID/events'</span>
+SECRET=<span class="text-emerald-400">'SEU_SECRET'</span>
+
+BODY=<span class="text-emerald-400">'{"company":{"cnpj":"12345678000190","razao_social":"Empresa Exemplo"},"contact":{"name":"Maria","email":"maria@exemplo.com","phone":"11987654321"},"extra":{"origem":"site"}}'</span>
+
+SIGNATURE=$(<span class="text-yellow-300">printf</span> <span class="text-emerald-400">'%s'</span> <span class="text-emerald-400">"$BODY"</span> | <span class="text-yellow-300">openssl</span> dgst <span class="text-blue-400">-sha256 -hmac</span> <span class="text-emerald-400">"$SECRET"</span> | <span class="text-yellow-300">awk</span> <span class="text-emerald-400">'{print $NF}'</span>)
+
+<span class="text-yellow-300">curl</span> <span class="text-blue-400">-i -X POST</span> <span class="text-emerald-400">"$URL"</span> \
+  <span class="text-blue-400">-H</span> <span class="text-emerald-400">'Content-Type: application/json'</span> \
+  <span class="text-blue-400">-H</span> <span class="text-emerald-400">"X-Webhook-Signature: sha256=$SIGNATURE"</span> \
+  <span class="text-blue-400">--data-binary</span> <span class="text-emerald-400">"$BODY"</span></code>
+            </div>
+          </div>
+        </section>
+
+        <section id="webhooks-payload" class="mb-20">
+          <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-3">
+            <i class="ri-braces-line text-emerald-500"></i> Payload
+          </h2>
+          <p class="text-zinc-400 mb-6">
+            O corpo é um JSON com três blocos opcionais: <code class="text-zinc-300">company</code>, <code
+              class="text-zinc-300">contact</code> e <code class="text-zinc-300">extra</code>. É obrigatório informar
+            ao menos um identificador (CNPJ, e-mail ou telefone).
+          </p>
+
+          <div class="overflow-hidden rounded-xl border border-zinc-800 mb-6">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="bg-zinc-900/50 border-b border-zinc-800">
+                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Campo</th>
+                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Tipo</th>
+                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Regras</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-zinc-800/50">
+                <tr>
+                  <td class="py-3 px-4"><code class="text-emerald-400">company.cnpj</code></td>
+                  <td class="py-3 px-4 text-zinc-500">string</td>
+                  <td class="py-3 px-4 text-zinc-400">14 dígitos. Pontuação é aceita e removida (<code
+                      class="text-zinc-300">12.345.678/0001-90</code>)</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4"><code class="text-emerald-400">company.razao_social</code></td>
+                  <td class="py-3 px-4 text-zinc-500">string</td>
+                  <td class="py-3 px-4 text-zinc-400">1 a 255 caracteres</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4"><code class="text-emerald-400">company.nome_fantasia</code></td>
+                  <td class="py-3 px-4 text-zinc-500">string</td>
+                  <td class="py-3 px-4 text-zinc-400">1 a 255 caracteres</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4"><code class="text-emerald-400">contact.name</code></td>
+                  <td class="py-3 px-4 text-zinc-500">string</td>
+                  <td class="py-3 px-4 text-zinc-400">1 a 255 caracteres</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4"><code class="text-emerald-400">contact.email</code></td>
+                  <td class="py-3 px-4 text-zinc-500">string</td>
+                  <td class="py-3 px-4 text-zinc-400">E-mail válido, até 254 caracteres</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4"><code class="text-emerald-400">contact.phone</code></td>
+                  <td class="py-3 px-4 text-zinc-500">string</td>
+                  <td class="py-3 px-4 text-zinc-400">DDD + número, de 10 a 13 dígitos. Formatação é aceita. Recomendamos
+                    enviar com o código do país (<code class="text-zinc-300">5511987654321</code>)</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4"><code class="text-emerald-400">extra</code></td>
+                  <td class="py-3 px-4 text-zinc-500">object</td>
+                  <td class="py-3 px-4 text-zinc-400">Objeto livre (chaves e valores à sua escolha), até 10.000 bytes de
+                    JSON. Gravado quando o lead é criado</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="mb-6 p-4 rounded-xl bg-yellow-500/5 border border-yellow-500/20">
+            <div class="flex items-start gap-3">
+              <i class="ri-error-warning-line text-yellow-500 mt-0.5"></i>
+              <div class="text-sm text-zinc-400">
+                <p class="mb-2"><strong class="text-yellow-400">O contrato é estrito:</strong></p>
+                <ul class="list-disc pl-5 space-y-1.5 marker:text-zinc-600">
+                  <li><code class="text-zinc-300">company</code> aceita somente <code class="text-zinc-300">cnpj</code>,
+                    <code class="text-zinc-300">razao_social</code> e <code class="text-zinc-300">nome_fantasia</code>.
+                    <code class="text-zinc-300">contact</code> aceita somente <code class="text-zinc-300">name</code>,
+                    <code class="text-zinc-300">email</code> e <code class="text-zinc-300">phone</code>. A raiz aceita
+                    somente <code class="text-zinc-300">company</code>, <code class="text-zinc-300">contact</code> e
+                    <code class="text-zinc-300">extra</code>.</li>
+                  <li>Qualquer outra chave, em qualquer um desses níveis, é recusada com <code
+                      class="text-yellow-400 bg-zinc-900 px-1.5 py-0.5 rounded text-xs">422</code>. Dados adicionais
+                    vão em <code class="text-zinc-300">extra</code>.</li>
+                  <li>Informe ao menos um entre <code class="text-zinc-300">company.cnpj</code>, <code
+                      class="text-zinc-300">contact.email</code> e <code class="text-zinc-300">contact.phone</code>.</li>
+                  <li>Para não enviar um campo ou bloco, omita a chave: <code class="text-zinc-300">null</code> não é
+                    aceito. O <code class="text-zinc-300">extra</code> precisa ser um objeto (não lista nem texto).</li>
+                  <li>O corpo inteiro pode ter no máximo <strong class="text-zinc-300">256 KB</strong> (262.144 bytes).
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Exemplo de corpo -->
+          <div class="code-window rounded-2xl bg-zinc-900 border border-zinc-800 overflow-hidden shadow-2xl mb-4">
+            <div class="flex items-center justify-between px-4 py-3 bg-zinc-900/80 border-b border-zinc-800">
+              <div class="flex items-center gap-3">
+                <div class="flex gap-1.5">
+                  <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
+                  <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
+                  <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
+                </div>
+                <span class="text-xs text-zinc-500 font-mono">Exemplo de corpo</span>
+              </div>
+              <button onclick="copyCode(this)"
+                class="copy-btn text-xs text-zinc-500 hover:text-zinc-300 transition-colors flex items-center gap-1">
+                <i class="ri-file-copy-line"></i> Copiar
+              </button>
+            </div>
+            <div class="p-5 font-mono text-sm leading-relaxed overflow-x-auto">
+              <code class="block whitespace-pre"><span class="text-zinc-500">{</span>
+  <span class="text-blue-300">"company"</span><span class="text-zinc-500">: {</span>
+    <span class="text-blue-300">"cnpj"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"12345678000190"</span><span class="text-zinc-500">,</span>
+    <span class="text-blue-300">"razao_social"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"Empresa Exemplo"</span><span class="text-zinc-500">,</span>
+    <span class="text-blue-300">"nome_fantasia"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"Exemplo"</span>
+  <span class="text-zinc-500">},</span>
+  <span class="text-blue-300">"contact"</span><span class="text-zinc-500">: {</span>
+    <span class="text-blue-300">"name"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"Maria"</span><span class="text-zinc-500">,</span>
+    <span class="text-blue-300">"email"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"maria@exemplo.com"</span><span class="text-zinc-500">,</span>
+    <span class="text-blue-300">"phone"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"11987654321"</span>
+  <span class="text-zinc-500">},</span>
+  <span class="text-blue-300">"extra"</span><span class="text-zinc-500">: {</span>
+    <span class="text-blue-300">"origem"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"site"</span><span class="text-zinc-500">,</span>
+    <span class="text-blue-300">"plano"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"premium"</span>
+  <span class="text-zinc-500">}</span>
+<span class="text-zinc-500">}</span></code>
+            </div>
+          </div>
+
+          <!-- Exemplo de 422 -->
+          <div class="code-window rounded-2xl bg-zinc-900 border border-zinc-800 overflow-hidden shadow-2xl">
+            <div class="flex items-center justify-between px-4 py-3 bg-zinc-900/80 border-b border-zinc-800">
+              <div class="flex items-center gap-3">
+                <div class="flex gap-1.5">
+                  <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
+                  <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
+                  <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
+                </div>
+                <span class="text-xs text-zinc-500 font-mono">Resposta - 422 (chave não aceita em contact)</span>
+              </div>
+            </div>
+            <div class="p-5 font-mono text-sm leading-relaxed overflow-x-auto">
+              <code class="block whitespace-pre"><span class="text-zinc-500">{</span>
+  <span class="text-blue-300">"error"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"Payload inválido"</span><span class="text-zinc-500">,</span>
+  <span class="text-blue-300">"details"</span><span class="text-zinc-500">: [</span>
+    <span class="text-zinc-500">{</span>
+      <span class="text-blue-300">"code"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"unrecognized_keys"</span><span class="text-zinc-500">,</span>
+      <span class="text-blue-300">"keys"</span><span class="text-zinc-500">: [</span><span class="text-emerald-400">"cargo"</span><span class="text-zinc-500">],</span>
+      <span class="text-blue-300">"path"</span><span class="text-zinc-500">: [</span><span class="text-emerald-400">"contact"</span><span class="text-zinc-500">],</span>
+      <span class="text-blue-300">"message"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"Unrecognized key: \"cargo\""</span>
+    <span class="text-zinc-500">}</span>
+  <span class="text-zinc-500">]</span>
+<span class="text-zinc-500">}</span></code>
+            </div>
+          </div>
+          <p class="text-zinc-500 text-sm mt-3"><code class="text-zinc-400">details</code> lista cada problema: <code
+              class="text-zinc-400">path</code> aponta o campo e <code class="text-zinc-400">message</code> explica o
+            motivo.</p>
+        </section>
+
+        <section id="webhooks-deduplicacao" class="mb-20">
+          <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-3">
+            <i class="ri-links-line text-emerald-500"></i> Deduplicação e atualização
+          </h2>
+          <p class="text-zinc-400 mb-6">
+            Reenviar o mesmo cliente é seguro: o BuscaLead atualiza o lead existente em vez de duplicar e nunca cria um
+            segundo card para o mesmo lead.
+          </p>
+
+          <h3 class="text-sm font-bold text-white mb-3 mt-8">Como o lead é encontrado</h3>
+          <p class="text-zinc-400 text-sm mb-3">A busca acontece dentro da sua organização, nesta ordem:</p>
+          <ol class="list-decimal pl-5 space-y-2 text-sm text-zinc-400 marker:text-zinc-600 mb-6">
+            <li><strong class="text-zinc-300">CNPJ</strong> (<code class="text-zinc-300">company.cnpj</code>), se
+              enviado.</li>
+            <li><strong class="text-zinc-300">Telefone</strong> (<code class="text-zinc-300">contact.phone</code>), com
+              ou sem o nono dígito, no telefone 1 ou 2 do lead. Havendo mais de um lead, vale o mais antigo.</li>
+            <li><strong class="text-zinc-300">E-mail</strong> (<code class="text-zinc-300">contact.email</code>), por
+              igualdade exata (diferencia maiúsculas e minúsculas, então envie sempre em minúsculas). Havendo mais de um
+              lead, vale o mais antigo.</li>
+          </ol>
+          <p class="text-zinc-500 text-sm mb-6">Se o evento traz um CNPJ e o lead encontrado por telefone ou e-mail já
+            tem outro CNPJ, ele é tratado como outra empresa e a busca segue adiante. Lead encontrado sem CNPJ pode ser
+            enriquecido com o CNPJ do evento.</p>
+
+          <h3 class="text-sm font-bold text-white mb-3 mt-8">O que é gravado</h3>
+          <div class="overflow-hidden rounded-xl border border-zinc-800 mb-6">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="bg-zinc-900/50 border-b border-zinc-800">
+                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Situação</th>
+                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Resultado</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-zinc-800/50">
+                <tr>
+                  <td class="py-3 px-4 text-zinc-300">Lead não encontrado</td>
+                  <td class="py-3 px-4 text-zinc-400">Cria o lead com os campos enviados. A origem fica <code
+                      class="text-zinc-300">Webhook: &lt;nome do webhook&gt;</code> e o <code
+                      class="text-zinc-300">extra</code> é guardado na atribuição do lead.</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 text-zinc-300">Lead encontrado</td>
+                  <td class="py-3 px-4 text-zinc-400">Atualiza apenas os campos enviados (CNPJ, razão social, nome
+                    fantasia, nome do contato e e-mail). O que você não enviou permanece como está. Origem e
+                    <code class="text-zinc-300">extra</code> não são regravados.</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 text-zinc-300">Telefone enviado</td>
+                  <td class="py-3 px-4 text-zinc-400">Salvo normalizado, com código do país (55) e nono dígito nos
+                    celulares. Se o número já está no lead, nada muda. Se é um número novo, passa a ser o telefone
+                    principal do lead.</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 text-zinc-300">Card no funil</td>
+                  <td class="py-3 px-4 text-zinc-400">Um card por lead, na primeira etapa do pipeline padrão. Se o card
+                    já existe, ele é reaproveitado. Se a organização não tem pipeline padrão, o lead é gravado e <code
+                      class="text-zinc-300">card_id</code> volta <code class="text-zinc-300">null</code>.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="webhooks-respostas" class="mb-20">
+          <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-3">
+            <i class="ri-reply-line text-emerald-500"></i> Respostas, limites e retentativas
+          </h2>
+
+          <!-- Exemplo de sucesso -->
+          <div class="code-window rounded-2xl bg-zinc-900 border border-zinc-800 overflow-hidden shadow-2xl mb-6">
+            <div class="flex items-center justify-between px-4 py-3 bg-zinc-900/80 border-b border-zinc-800">
+              <div class="flex items-center gap-3">
+                <div class="flex gap-1.5">
+                  <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
+                  <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
+                  <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
+                </div>
+                <span class="text-xs text-zinc-500 font-mono">Resposta - 200 OK</span>
+              </div>
+            </div>
+            <div class="p-5 font-mono text-sm leading-relaxed overflow-x-auto">
+              <code>
+                <div class="text-zinc-500">{</div>
+                <div class="pl-4"><span class="text-blue-300">"success"</span><span class="text-zinc-500">:</span> <span class="text-yellow-300">true</span><span class="text-zinc-500">,</span></div>
+                <div class="pl-4"><span class="text-blue-300">"lead_id"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"b3f5c1d2-0a4e-4c8b-9f6d-2e7a1c5d8b90"</span><span class="text-zinc-500">,</span></div>
+                <div class="pl-4"><span class="text-blue-300">"card_id"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"7d2e9a40-51cb-4f3a-8e16-c04b9d7a3f25"</span></div>
+                <div class="text-zinc-500">}</div>
+              </code>
+            </div>
+          </div>
+
+          <p class="text-zinc-400 text-sm mb-4">Neste endpoint, o corpo dos erros pode ser <code
+              class="text-zinc-300">{"error": "..."}</code> ou o formato geral da seção <a href="#erros"
+              class="text-emerald-500 hover:underline">Erros</a>. Decida sempre pelo código HTTP.</p>
+
+          <div class="overflow-hidden rounded-xl border border-zinc-800 mb-6">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="bg-zinc-900/50 border-b border-zinc-800">
+                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Código</th>
+                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Quando</th>
+                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">O que fazer</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-zinc-800/50">
+                <tr>
+                  <td class="py-3 px-4"><code class="text-emerald-400">200</code></td>
+                  <td class="py-3 px-4 text-zinc-400">Evento processado: lead criado ou atualizado. <code
+                      class="text-zinc-300">card_id</code> é <code class="text-zinc-300">null</code> se a organização
+                    não tem pipeline padrão.</td>
+                  <td class="py-3 px-4 text-zinc-500">Nada. Marque o evento como entregue.</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4"><code class="text-yellow-400">400</code></td>
+                  <td class="py-3 px-4 text-zinc-400">O corpo não é um JSON válido.</td>
+                  <td class="py-3 px-4 text-zinc-500">Corrija o JSON. Reenviar igual repete o erro.</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4"><code class="text-yellow-400">401</code></td>
+                  <td class="py-3 px-4 text-zinc-400">URL inexistente (ou com um <code class="text-zinc-300">id</code>
+                    que não é UUID), webhook desativado, assinatura ausente ou inválida, ou <code
+                      class="text-zinc-300">Content-Type</code> de texto/formulário (o corpo não pode ser assinado).
+                    Todas as causas respondem igual (<code class="text-zinc-300">{"error":"Unauthorized"}</code>).
+                  </td>
+                  <td class="py-3 px-4 text-zinc-500">Confira a URL, se o webhook está ativo, o secret e a assinatura
+                    sobre o corpo exato. Eventos enviados com o webhook desativado não são reprocessados.</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4"><code class="text-yellow-400">413</code></td>
+                  <td class="py-3 px-4 text-zinc-400">Corpo acima de 256 KB (262.144 bytes), qualquer que seja o <code
+                      class="text-zinc-300">Content-Type</code>.</td>
+                  <td class="py-3 px-4 text-zinc-500">Reduza o corpo, principalmente o <code
+                      class="text-zinc-400">extra</code>.</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4"><code class="text-yellow-400">415</code></td>
+                  <td class="py-3 px-4 text-zinc-400"><code class="text-zinc-300">Content-Type</code> sem suporte (por
+                    exemplo <code class="text-zinc-300">application/xml</code>) ou corpo enviado sem <code
+                      class="text-zinc-300">Content-Type</code>.</td>
+                  <td class="py-3 px-4 text-zinc-500">Envie <code class="text-zinc-400">Content-Type:
+                      application/json</code>.</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4"><code class="text-yellow-400">422</code></td>
+                  <td class="py-3 px-4 text-zinc-400">Assinatura válida, mas o conteúdo está fora do contrato (por
+                    exemplo: chave não aceita, nenhum identificador, CNPJ sem 14 dígitos, telefone fora de 10 a 13
+                    dígitos, e-mail inválido, texto acima do limite ou <code class="text-zinc-300">extra</code> acima de
+                    10.000 bytes). Veja <code class="text-zinc-300">details</code>.</td>
+                  <td class="py-3 px-4 text-zinc-500">Corrija conforme <code class="text-zinc-400">details</code>.</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4"><code class="text-yellow-400">429</code></td>
+                  <td class="py-3 px-4 text-zinc-400">Limite excedido: mais de 140 requisições por minuto neste webhook
+                    ou mais de 600 por minuto vindas do mesmo IP.</td>
+                  <td class="py-3 px-4 text-zinc-500">Aguarde e reenvie com espaçamento crescente. Respeite o header
+                    <code class="text-zinc-400">Retry-After</code> quando houver. Insistir acima do limite por IP pode
+                    bloquear o IP por 10 minutos.</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4"><code class="text-red-400">5xx</code></td>
+                  <td class="py-3 px-4 text-zinc-400">Falha temporária do servidor.</td>
+                  <td class="py-3 px-4 text-zinc-500">Reenvie com espaçamento crescente.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3 class="text-sm font-bold text-white mb-3 mt-8">Limites</h3>
+          <div class="overflow-hidden rounded-xl border border-zinc-800 mb-6">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="bg-zinc-900/50 border-b border-zinc-800">
+                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Limite</th>
+                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Valor</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-zinc-800/50">
+                <tr>
+                  <td class="py-3 px-4 text-zinc-300">Requisições por webhook</td>
+                  <td class="py-3 px-4"><code class="text-yellow-400">140</code> <span class="text-zinc-500">por
+                      minuto</span></td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 text-zinc-300">Requisições por IP <span class="text-zinc-600">(todos os webhooks
+                      somados)</span></td>
+                  <td class="py-3 px-4"><code class="text-yellow-400">600</code> <span class="text-zinc-500">por
+                      minuto</span></td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 text-zinc-300">Tamanho do corpo</td>
+                  <td class="py-3 px-4"><code class="text-yellow-400">256 KB</code></td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 text-zinc-300">Tamanho do <code class="text-zinc-400">extra</code></td>
+                  <td class="py-3 px-4"><code class="text-yellow-400">10.000 bytes</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/20">
+            <div class="flex items-start gap-3">
+              <i class="ri-refresh-line text-emerald-500 mt-0.5"></i>
+              <div class="text-sm text-zinc-400">
+                <p class="mb-2"><strong class="text-zinc-300">Retentativas</strong></p>
+                <ul class="list-disc pl-5 space-y-1.5 marker:text-zinc-600">
+                  <li>Reenvie apenas <code class="text-zinc-300">429</code> e <code class="text-zinc-300">5xx</code>,
+                    esperando um pouco mais a cada tentativa (por exemplo 1 s, 2 s, 4 s, 8 s...).</li>
+                  <li>Os demais códigos (<code class="text-zinc-300">400</code>, <code
+                      class="text-zinc-300">401</code>, <code class="text-zinc-300">413</code>, <code
+                      class="text-zinc-300">415</code> e <code class="text-zinc-300">422</code>) pedem correção antes de
+                    reenviar.</li>
+                  <li>Reenviar um evento é seguro: o lead é atualizado, nunca duplicado, e o card não é recriado.</li>
+                  <li>Toda requisição autenticada conta no limite por webhook, inclusive as recusadas com <code
+                      class="text-zinc-300">422</code>.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
 
         <!-- Footer -->
         <div
