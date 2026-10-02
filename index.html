@@ -1641,8 +1641,9 @@ SIGNATURE=$(<span class="text-yellow-300">printf</span> <span class="text-emeral
                   <td class="py-3 px-4 text-zinc-400">Assinatura válida, mas o conteúdo está fora do contrato (por
                     exemplo: chave não aceita, nenhum identificador, CNPJ sem 14 dígitos, telefone fora de 10 a 13
                     dígitos, e-mail inválido, texto acima do limite, caractere nulo (<code
-                      class="text-zinc-300">\u0000</code>) em qualquer texto ou chave, ou <code
-                      class="text-zinc-300">extra</code> acima de 10.000 bytes). Veja <code
+                      class="text-zinc-300">\u0000</code>) ou Unicode inválido (surrogate solitário, como <code
+                      class="text-zinc-300">\ud83d</code> sem o <code class="text-zinc-300">\ude00</code>) em qualquer
+                    texto ou chave, ou <code class="text-zinc-300">extra</code> acima de 10.000 bytes). Veja <code
                       class="text-zinc-300">details</code>.</td>
                   <td class="py-3 px-4 text-zinc-500">Corrija conforme <code class="text-zinc-400">details</code>.</td>
                 </tr>
