@@ -179,7 +179,9 @@
             <a href="#webhooks-visao-geral"
               class="sidebar-link block px-3 py-1.5 text-sm text-zinc-400 border-l-2 border-transparent rounded-r-md transition-all">Visão geral</a>
             <a href="#webhooks-assinatura"
-              class="sidebar-link block px-3 py-1.5 text-sm text-zinc-400 border-l-2 border-transparent rounded-r-md transition-all">Assinatura (HMAC)</a>
+              class="sidebar-link block px-3 py-1.5 text-sm text-zinc-400 border-l-2 border-transparent rounded-r-md transition-all">Opção 1 - Assinatura (HMAC)</a>
+            <a href="#webhooks-secret-header"
+              class="sidebar-link block px-3 py-1.5 text-sm text-zinc-400 border-l-2 border-transparent rounded-r-md transition-all">Opção 2 - Secret no header</a>
             <a href="#webhooks-payload"
               class="sidebar-link block px-3 py-1.5 text-sm text-zinc-400 border-l-2 border-transparent rounded-r-md transition-all">Payload</a>
             <a href="#webhooks-deduplicacao"
@@ -1137,7 +1139,7 @@
             <h2 class="text-2xl font-bold text-white">Receber leads por webhook</h2>
           </div>
           <p class="text-zinc-400 mb-2">Receba leads de outros sistemas (ERP, site, formulário, CRM) automaticamente.
-            Cada webhook tem uma URL própria e um secret: a cada evento assinado que o seu sistema envia, o BuscaLead
+            Cada webhook tem uma URL própria e um secret: a cada evento autenticado que o seu sistema envia, o BuscaLead
             cria ou atualiza o lead na sua organização e garante o card no funil.</p>
           <code
             class="text-sm font-mono text-emerald-400 bg-zinc-900 px-3 py-1.5 rounded-lg border border-zinc-800 inline-block mb-6">/webhook-integrations/{id}/events</code>
@@ -1163,7 +1165,8 @@
                 personalizados estão disponíveis nos planos Starter, Plus, Business e Pro. <strong
                   class="text-yellow-400">Sem API Key:</strong> esta rota não usa o header <code
                   class="text-yellow-400 bg-zinc-900 px-1.5 py-0.5 rounded text-xs">Authorization</code>; quem
-                autentica a requisição é a assinatura do corpo (próxima seção).</p>
+                autentica a requisição é a assinatura do corpo (Opção 1) ou o secret no header (Opção 2), nas próximas
+                seções.</p>
             </div>
           </div>
 
@@ -1180,8 +1183,10 @@
               secret é exibido <strong class="text-zinc-300">uma única vez</strong>, com 43 caracteres (letras, números,
               <code class="text-zinc-400">-</code> e <code class="text-zinc-400">_</code>). Se perder, use <strong
                 class="text-zinc-300">Regenerar secret</strong>: o secret anterior deixa de valer imediatamente.</li>
-            <li>No seu sistema, envie um <code class="text-zinc-400">POST</code> JSON assinado (veja as próximas seções)
-              a cada novo cadastro.</li>
+            <li>No seu sistema, envie um <code class="text-zinc-400">POST</code> JSON autenticado a cada novo cadastro:
+              assinado com HMAC (<a href="#webhooks-assinatura" class="text-emerald-500 hover:underline">Opção 1</a>,
+              recomendada) ou com o secret no header (<a href="#webhooks-secret-header"
+                class="text-emerald-500 hover:underline">Opção 2</a>, para ferramentas no-code).</li>
           </ol>
 
           <h3 class="text-sm font-bold text-white mb-3 mt-8">O que acontece a cada evento</h3>
@@ -1204,11 +1209,13 @@
 
         <section id="webhooks-assinatura" class="mb-20">
           <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-3">
-            <i class="ri-shield-check-line text-emerald-500"></i> Assinatura (HMAC)
+            <i class="ri-shield-check-line text-emerald-500"></i> Opção 1 - Assinatura (HMAC), recomendada
           </h2>
           <p class="text-zinc-400 mb-6">
-            Toda requisição precisa de dois headers. A assinatura prova que o corpo veio de quem conhece o secret e que
-            não foi alterado no caminho.
+            A assinatura prova que o corpo veio de quem conhece o secret e que não foi alterado no caminho, e o secret
+            nunca trafega. Use esta opção sempre que o seu sistema consegue calcular um HMAC. Para ferramentas no-code,
+            veja a <a href="#webhooks-secret-header" class="text-emerald-500 hover:underline">Opção 2</a>. Neste modo,
+            toda requisição precisa de dois headers:
           </p>
 
           <div class="overflow-hidden rounded-xl border border-zinc-800 mb-6">
@@ -1252,9 +1259,8 @@
               <div class="text-sm text-zinc-400">
                 <p class="mb-2"><strong class="text-yellow-400">Dois detalhes que mais causam 401:</strong></p>
                 <ul class="list-disc pl-5 space-y-1.5 marker:text-zinc-600">
-                  <li><strong class="text-zinc-300">A chave é o texto do secret, exatamente como exibido.</strong> Use a
-                    string como está. Não decodifique de base64 nem de base64url: a assinatura com a chave decodificada
-                    não confere.</li>
+                  <li><strong class="text-zinc-300">Use o secret exatamente como aparece (copie e cole).</strong> Ele é
+                    a chave do HMAC, sem nenhuma conversão.</li>
                   <li><strong class="text-zinc-300">Assine os bytes exatos que você envia.</strong> Se o seu cliente HTTP
                     reserializar o JSON depois de assinado (espaços, ordem das chaves, escape de acentos), a assinatura
                     deixa de bater. Gere o texto, assine e envie esse mesmo texto.</li>
@@ -1335,6 +1341,109 @@ SIGNATURE=$(<span class="text-yellow-300">printf</span> <span class="text-emeral
   <span class="text-blue-400">-H</span> <span class="text-emerald-400">'Content-Type: application/json'</span> \
   <span class="text-blue-400">-H</span> <span class="text-emerald-400">"X-Webhook-Signature: sha256=$SIGNATURE"</span> \
   <span class="text-blue-400">--data-binary</span> <span class="text-emerald-400">"$BODY"</span></code>
+            </div>
+          </div>
+        </section>
+
+        <section id="webhooks-secret-header" class="mb-20">
+          <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-3">
+            <i class="ri-key-2-line text-emerald-500"></i> Opção 2 - secret no header (ferramentas no-code)
+          </h2>
+          <p class="text-zinc-400 mb-6">
+            Ferramentas de automação como Zapier, Make e n8n nem sempre calculam HMAC. Para elas, existe um modo direto:
+            envie o próprio secret no header <code class="text-zinc-300">X-Webhook-Secret</code> em toda requisição e o
+            BuscaLead confere.
+          </p>
+
+          <div class="overflow-hidden rounded-xl border border-zinc-800 mb-6">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="bg-zinc-900/50 border-b border-zinc-800">
+                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Header</th>
+                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Valor</th>
+                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Obrigatório</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-zinc-800/50">
+                <tr>
+                  <td class="py-3 px-4"><code class="text-emerald-400">Content-Type</code></td>
+                  <td class="py-3 px-4"><code class="text-zinc-300">application/json</code> <span
+                      class="text-zinc-600">(pode incluir <code class="text-zinc-500">; charset=utf-8</code>)</span></td>
+                  <td class="py-3 px-4 text-zinc-400">Sim</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4"><code class="text-emerald-400">X-Webhook-Secret</code></td>
+                  <td class="py-3 px-4"><code class="text-zinc-300">&lt;o secret, exatamente como aparece&gt;</code></td>
+                  <td class="py-3 px-4 text-zinc-400">Sim</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3 class="text-sm font-bold text-white mb-3 mt-8">Como configurar na sua ferramenta</h3>
+          <ol class="list-decimal pl-5 space-y-2 text-sm text-zinc-400 marker:text-zinc-600 mb-6">
+            <li>Crie uma ação de requisição HTTP do tipo <code class="text-zinc-400">POST</code> para a URL do webhook.
+            </li>
+            <li>Adicione o header <code class="text-zinc-400">X-Webhook-Secret</code> com o secret copiado do painel
+              (copie e cole, exatamente como aparece).</li>
+            <li>Envie o corpo como <strong class="text-zinc-300">JSON</strong> (<code
+                class="text-zinc-400">Content-Type: application/json</code>), no formato da seção <a
+                href="#webhooks-payload" class="text-emerald-500 hover:underline">Payload</a>. Corpo em formato de
+              formulário ou texto simples é recusado com <code
+                class="text-yellow-400 bg-zinc-900 px-1.5 py-0.5 rounded text-xs">422</code>.</li>
+          </ol>
+
+          <div class="mb-6 p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/20">
+            <div class="flex items-start gap-3">
+              <i class="ri-information-line text-emerald-500 mt-0.5"></i>
+              <div class="text-sm text-zinc-400">
+                <p class="text-zinc-300 font-medium mb-1">Qual header vale</p>
+                <p>Se a requisição trouxer <code class="text-zinc-300">X-Webhook-Signature</code> (com qualquer valor),
+                  <strong class="text-zinc-300">só a assinatura</strong> é conferida: um <code
+                    class="text-zinc-300">X-Webhook-Secret</code> correto não corrige uma assinatura errada. Sem <code
+                    class="text-zinc-300">X-Webhook-Signature</code>, vale o <code
+                    class="text-zinc-300">X-Webhook-Secret</code>. Sem nenhum dos dois, a resposta é <code
+                    class="text-yellow-400 bg-zinc-900 px-1.5 py-0.5 rounded text-xs">401</code>.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-6 p-4 rounded-xl bg-yellow-500/5 border border-yellow-500/20">
+            <div class="flex items-start gap-3">
+              <i class="ri-shield-keyhole-line text-yellow-500 mt-0.5"></i>
+              <p class="text-sm text-zinc-400"><strong class="text-yellow-400">Mais simples, porém o secret viaja em toda
+                  requisição.</strong> A conexão é sempre HTTPS, mas a ferramenta que envia e os proxies no caminho podem
+                registrar os headers em logs. Quando o seu sistema consegue calcular a assinatura, prefira a <a
+                  href="#webhooks-assinatura" class="text-emerald-500 hover:underline">Opção 1</a>: nela o secret nunca
+                trafega. Se suspeitar que o secret foi exposto, use <strong class="text-zinc-300">Regenerar
+                  secret</strong>: o anterior deixa de valer imediatamente.</p>
+            </div>
+          </div>
+
+          <!-- Exemplo curl -->
+          <div class="code-window rounded-2xl bg-zinc-900 border border-zinc-800 overflow-hidden shadow-2xl">
+            <div class="flex items-center justify-between px-4 py-3 bg-zinc-900/80 border-b border-zinc-800">
+              <div class="flex items-center gap-3">
+                <div class="flex gap-1.5">
+                  <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
+                  <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
+                  <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
+                </div>
+                <span class="text-xs text-zinc-500 font-mono">Exemplo em bash (curl)</span>
+              </div>
+              <button onclick="copyCode(this)"
+                class="copy-btn text-xs text-zinc-500 hover:text-zinc-300 transition-colors flex items-center gap-1">
+                <i class="ri-file-copy-line"></i> Copiar
+              </button>
+            </div>
+            <div class="p-5 font-mono text-sm leading-relaxed overflow-x-auto">
+              <code class="block whitespace-pre">URL=<span class="text-emerald-400">'https://api.buscalead.com/v1/webhook-integrations/SEU_ID/events'</span>
+SECRET=<span class="text-emerald-400">'SEU_SECRET'</span>
+
+<span class="text-yellow-300">curl</span> <span class="text-blue-400">-i -X POST</span> <span class="text-emerald-400">"$URL"</span> \
+  <span class="text-blue-400">-H</span> <span class="text-emerald-400">'Content-Type: application/json'</span> \
+  <span class="text-blue-400">-H</span> <span class="text-emerald-400">"X-Webhook-Secret: $SECRET"</span> \
+  <span class="text-blue-400">--data-binary</span> <span class="text-emerald-400">'{"company":{"cnpj":"12345678000190","razao_social":"Empresa Exemplo"},"contact":{"name":"Maria","email":"maria@exemplo.com","phone":"11987654321"},"extra":{"origem":"site"}}'</span></code>
             </div>
           </div>
         </section>
@@ -1614,12 +1723,16 @@ SIGNATURE=$(<span class="text-yellow-300">printf</span> <span class="text-emeral
                 <tr>
                   <td class="py-3 px-4"><code class="text-yellow-400">401</code></td>
                   <td class="py-3 px-4 text-zinc-400">URL inexistente (ou com um <code class="text-zinc-300">id</code>
-                    que não é UUID), webhook desativado, assinatura ausente ou inválida, ou <code
-                      class="text-zinc-300">Content-Type</code> de texto/formulário (o corpo não pode ser assinado).
-                    Todas as causas respondem igual (<code class="text-zinc-300">{"error":"Unauthorized"}</code>).
+                    que não é UUID), webhook desativado, nenhuma credencial (nem <code
+                      class="text-zinc-300">X-Webhook-Signature</code> nem <code
+                      class="text-zinc-300">X-Webhook-Secret</code>), assinatura ou secret inválido, ou, na Opção 1,
+                    <code class="text-zinc-300">Content-Type</code> de texto/formulário (o corpo não pode ser
+                    assinado). Todas as causas respondem igual (<code
+                      class="text-zinc-300">{"error":"Unauthorized"}</code>).
                   </td>
                   <td class="py-3 px-4 text-zinc-500">Confira a URL, se o webhook está ativo, o secret e a assinatura
-                    sobre o corpo exato. Eventos enviados com o webhook desativado não são reprocessados.</td>
+                    sobre o corpo exato (Opção 1) ou o header <code class="text-zinc-400">X-Webhook-Secret</code>
+                    (Opção 2). Eventos enviados com o webhook desativado não são reprocessados.</td>
                 </tr>
                 <tr>
                   <td class="py-3 px-4"><code class="text-yellow-400">413</code></td>
@@ -1638,12 +1751,13 @@ SIGNATURE=$(<span class="text-yellow-300">printf</span> <span class="text-emeral
                 </tr>
                 <tr>
                   <td class="py-3 px-4"><code class="text-yellow-400">422</code></td>
-                  <td class="py-3 px-4 text-zinc-400">Assinatura válida, mas o conteúdo está fora do contrato (por
+                  <td class="py-3 px-4 text-zinc-400">Autenticação válida, mas o conteúdo está fora do contrato (por
                     exemplo: chave não aceita, nenhum identificador, CNPJ sem 14 dígitos, telefone fora de 10 a 13
                     dígitos, e-mail inválido, texto acima do limite, caractere nulo (<code
                       class="text-zinc-300">\u0000</code>) ou Unicode inválido (surrogate solitário, como <code
                       class="text-zinc-300">\ud83d</code> sem o <code class="text-zinc-300">\ude00</code>) em qualquer
-                    texto ou chave, ou <code class="text-zinc-300">extra</code> acima de 10.000 bytes). Veja <code
+                    texto ou chave, <code class="text-zinc-300">extra</code> acima de 10.000 bytes, ou, na Opção 2,
+                    corpo que não é JSON, como formulário ou texto). Veja <code
                       class="text-zinc-300">details</code>.</td>
                   <td class="py-3 px-4 text-zinc-500">Corrija conforme <code class="text-zinc-400">details</code>.</td>
                 </tr>
