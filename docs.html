@@ -532,10 +532,11 @@ for (let page = 1; ; page++) {
             <tr><td>404</td><td><code>not_found</code></td><td>CNPJ não encontrado na consulta, ou rota inexistente.</td></tr>
             <tr><td>413</td><td><code>payload_too_large</code></td><td>Corpo do lote acima de 32 KiB.</td></tr>
             <tr><td>422</td><td><code>query_too_broad</code></td><td>A busca ficou ampla demais e foi interrompida. Use filtros mais específicos (<code>cnae</code>, <code>municipio</code>, <code>porte</code>, <code>abertura_de</code>/<code>abertura_ate</code>).</td></tr>
-            <tr><td>429</td><td><code>rate_limited</code></td><td>Limite de requisições por minuto excedido. Veja <code>Retry-After</code> em <a class="lnk" href="#limites">Limites</a>.</td></tr>
+            <tr><td>429</td><td><code>rate_limited</code></td><td>Limite de requisições por minuto excedido, ou buscas demais em andamento ao mesmo tempo. Aguarde o tempo do header <code>Retry-After</code> (veja <a class="lnk" href="#limites">Limites</a>).</td></tr>
             <tr><td>499</td><td><code>client_closed_request</code></td><td>A conexão foi encerrada antes da resposta. Nada foi cobrado.</td></tr>
             <tr><td>500</td><td><code>internal_error</code></td><td>Falha interna, com mensagem genérica. Tente de novo.</td></tr>
             <tr><td>503</td><td><code>billing_unavailable</code></td><td>O serviço de créditos está indisponível. Tente de novo em instantes.</td></tr>
+            <tr><td>503</td><td><code>service_unavailable</code></td><td>A base de empresas está sobrecarregada no momento. Tente de novo depois do tempo do header <code>Retry-After</code>.</td></tr>
           </tbody>
         </table></div>
         <p>Qualquer outro erro 4xx sai com o código <code class="ic">request_error</code>. Nenhum erro cobra créditos. Repita 5xx e 429 com espera crescente; 4xx pede ajuste na chamada.</p>
