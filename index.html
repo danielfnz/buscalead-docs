@@ -1,1890 +1,374 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="scroll-smooth">
+<html lang="pt-BR">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BuscaLead API - Documentação para Desenvolvedores</title>
-  <meta name="description"
-    content="API REST do BuscaLead: consulte +29 milhões de empresas ativas por CNPJ, CNAE, estado e porte. Em todos os planos pagos, a partir do Starter.">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet">
+  <title>API de CNPJ com telefone e e-mail | BuscaLead API</title>
+  <meta name="description" content="Busque empresas por CNAE, cidade e porte e receba telefone (celular ou fixo), e-mail, sócios e endereço na mesma chamada. +29 milhões de empresas ativas. Teste com 200 consultas grátis por 7 dias.">
+  <link rel="canonical" href="https://docs.buscalead.com/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="BuscaLead">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:title" content="API de CNPJ com telefone e e-mail | BuscaLead API">
+  <meta property="og:description" content="Busca com filtros e contato numa chamada só: telefone classificado em celular ou fixo, e-mail, sócios e endereço. Teste com 200 consultas grátis por 7 dias.">
+  <meta property="og:url" content="https://docs.buscalead.com/">
+  <meta property="og:image" content="https://docs.buscalead.com/assets/og-api.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
   <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-            mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
-          }
-        }
-      }
-    }
+    // Links antigos (docs.buscalead.com/#webhooks-visao-geral, #busca-rapida...) agora vivem em docs.html.
+    (function () {
+      var v1 = { 'rate-limiting': 'v1-rate-limiting', 'busca-rapida': 'v1-busca-rapida', 'busca-avancada': 'v1-busca-avancada', 'detalhes-empresa': 'v1-detalhes-empresa', 'detalhes-cnpj': 'v1-detalhes-cnpj', 'cnaes': 'v1-cnaes', 'estados': 'v1-estados', 'natureza-juridica': 'v1-natureza-juridica', 'introducao': 'introducao', 'autenticacao': 'autenticacao', 'erros': 'erros', 'paginacao': 'paginacao' };
+      var h = decodeURIComponent(location.hash.slice(1));
+      if (/^webhooks-/.test(h)) location.replace('/docs.html#' + h);
+      else if (v1[h]) location.replace('/docs.html#' + v1[h]);
+    })();
   </script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
-    rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Inter', system-ui, sans-serif;
-    }
-
-    code,
-    pre,
-    .font-mono {
-      font-family: 'JetBrains Mono', 'Fira Code', monospace;
-    }
-
-    .sidebar-link.active {
-      color: #10b981;
-      border-left-color: #10b981;
-    }
-
-    .sidebar-link:hover {
-      color: #d4d4d8;
-      border-left-color: #3f3f46;
-    }
-
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background: #27272a;
-      border-radius: 3px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-      background: #3f3f46;
-    }
-
-    .code-window {
-      position: relative;
-    }
-
-    .copy-btn {
-      opacity: 0;
-      transition: opacity 0.2s;
-    }
-
-    .code-window:hover .copy-btn {
-      opacity: 1;
-    }
-  </style>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css">
+  <link rel="stylesheet" href="/assets/site.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "API de dados BuscaLead",
+    "description": "API REST de empresas do Brasil: busca com filtros, consulta por CNPJ e lote, com telefone classificado em celular ou fixo, e-mail, sócios e endereço. 1 crédito por empresa devolvida.",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Web",
+    "url": "https://docs.buscalead.com/",
+    "provider": { "@type": "Organization", "name": "BuscaLead", "url": "https://buscalead.com" },
+    "offers": [
+      { "@type": "Offer", "name": "Básico 1", "description": "5.000 consultas por mês, assinatura mensal no cartão de crédito", "price": "29.90", "priceCurrency": "BRL", "url": "https://docs.buscalead.com/#planos" },
+      { "@type": "Offer", "name": "Básico 2", "description": "12.000 consultas por mês, assinatura mensal no cartão de crédito", "price": "59.90", "priceCurrency": "BRL", "url": "https://docs.buscalead.com/#planos" },
+      { "@type": "Offer", "name": "Básico 3", "description": "25.000 consultas por mês, assinatura mensal no cartão de crédito", "price": "99.90", "priceCurrency": "BRL", "url": "https://docs.buscalead.com/#planos" },
+      { "@type": "Offer", "name": "Intermediário 1", "description": "70.000 consultas por mês, assinatura mensal no cartão de crédito", "price": "199.90", "priceCurrency": "BRL", "url": "https://docs.buscalead.com/#planos" },
+      { "@type": "Offer", "name": "Intermediário 2", "description": "250.000 consultas por mês, assinatura mensal no cartão de crédito", "price": "499.90", "priceCurrency": "BRL", "url": "https://docs.buscalead.com/#planos" },
+      { "@type": "Offer", "name": "Intermediário 3", "description": "500.000 consultas por mês, assinatura mensal no cartão de crédito", "price": "749.90", "priceCurrency": "BRL", "url": "https://docs.buscalead.com/#planos" },
+      { "@type": "Offer", "name": "Avançado 1", "description": "1.000.000 consultas por mês, assinatura mensal no cartão de crédito", "price": "999.90", "priceCurrency": "BRL", "url": "https://docs.buscalead.com/#planos" },
+      { "@type": "Offer", "name": "Avançado 2", "description": "3.000.000 consultas por mês, assinatura mensal no cartão de crédito", "price": "1999.90", "priceCurrency": "BRL", "url": "https://docs.buscalead.com/#planos" }
+    ]
+  }
+  </script>
+  <script src="/assets/site.js" defer></script>
 </head>
 
-<body class="bg-zinc-950 text-zinc-300 antialiased">
-
-  <!-- Header -->
-  <header class="fixed top-0 left-0 right-0 z-50 bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-800/50">
-    <div class="flex items-center justify-between px-6 h-16">
-      <div class="flex items-center gap-6">
-        <a href="https://buscalead.com" class="flex items-center gap-2 hover:opacity-80 transition-opacity">
-          <div class="w-7 h-7 bg-emerald-500 rounded-lg flex items-center justify-center p-1.5">
-            <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <polygon fill="#fff" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
-                fill-rule="evenodd" points="20 7.75 4 7.75 2 3 22 3 20 7.75" />
-              <polygon fill="#fff" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
-                fill-rule="evenodd" points="17 14.875 7 14.875 5 10.125 19 10.125 17 14.875" />
-              <polygon fill="#fff" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
-                fill-rule="evenodd" points="14 22 10 22 8 17.25 16 17.25 14 22" />
-            </svg>
-          </div>
-          <span class="text-base font-bold text-white tracking-tight">Busca<span
-              class="text-emerald-500">Lead</span></span>
-        </a>
-        <span class="text-zinc-600 text-sm">|</span>
-        <span class="text-zinc-400 text-sm font-medium">Documentação da API</span>
-      </div>
-      <div class="flex items-center gap-4">
-        <span
-          class="text-xs font-mono px-2.5 py-1 rounded-md bg-zinc-900 border border-zinc-800 text-zinc-500">v1</span>
-        <a href="https://buscalead.com/auth/register"
-          class="text-sm font-semibold text-zinc-950 bg-emerald-500 hover:bg-emerald-600 px-4 py-2 rounded-lg transition-colors">
-          Criar conta grátis
-        </a>
+<body>
+  <header class="hdr">
+    <div class="wrap">
+      <a href="/" class="brand" aria-label="BuscaLead API">
+        <span class="brand-tile"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><polygon fill="#fff" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill-rule="evenodd" points="20 7.75 4 7.75 2 3 22 3 20 7.75"/><polygon fill="#fff" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill-rule="evenodd" points="17 14.875 7 14.875 5 10.125 19 10.125 17 14.875"/><polygon fill="#fff" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill-rule="evenodd" points="14 22 10 22 8 17.25 16 17.25 14 22"/></svg></span>
+        <span>Busca<span style="color:var(--emerald-500)">Lead</span></span>
+        <span class="brand-tag">API</span>
+      </a>
+      <nav class="nav-top hidden lg:flex items-center gap-1" aria-label="Principal">
+        <a href="#resposta">Resposta</a>
+        <a href="#cobranca">Cobrança</a>
+        <a href="#planos">Preços</a>
+        <a href="#faq">FAQ</a>
+        <a href="/docs.html">Documentação</a>
+      </nav>
+      <div class="flex items-center gap-2">
+        <a class="btn btn-primary hidden md:inline-flex" style="padding:.5rem 1.25rem" href="https://wa.me/5534992885263" data-cta="register">Começar grátis</a>
+        <button id="menu-btn" type="button" class="lg:hidden btn btn-secondary" style="padding:.5rem .75rem" aria-label="Abrir menu" aria-expanded="false" aria-controls="mnav"><i class="ri-menu-line"></i></button>
       </div>
     </div>
   </header>
-
-  <div class="flex pt-16">
-
-    <!-- Sidebar -->
-    <aside
-      class="fixed left-0 top-16 bottom-0 w-64 bg-zinc-950 border-r border-zinc-800/50 overflow-y-auto py-6 px-4 hidden lg:block">
-      <nav class="space-y-6">
-        <!-- Introdução -->
-        <div>
-          <h4 class="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-3 px-3">Introdução</h4>
-          <div class="space-y-0.5">
-            <a href="#introducao"
-              class="sidebar-link block px-3 py-1.5 text-sm text-zinc-400 border-l-2 border-transparent rounded-r-md transition-all">Visão
-              Geral</a>
-            <a href="#autenticacao"
-              class="sidebar-link block px-3 py-1.5 text-sm text-zinc-400 border-l-2 border-transparent rounded-r-md transition-all">Autenticação</a>
-            <a href="#rate-limiting"
-              class="sidebar-link block px-3 py-1.5 text-sm text-zinc-400 border-l-2 border-transparent rounded-r-md transition-all">Rate
-              Limiting</a>
-            <a href="#erros"
-              class="sidebar-link block px-3 py-1.5 text-sm text-zinc-400 border-l-2 border-transparent rounded-r-md transition-all">Erros</a>
-            <a href="#paginacao"
-              class="sidebar-link block px-3 py-1.5 text-sm text-zinc-400 border-l-2 border-transparent rounded-r-md transition-all">Paginação</a>
-          </div>
-        </div>
-
-        <!-- Empresas -->
-        <div>
-          <h4 class="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-3 px-3">Empresas</h4>
-          <div class="space-y-0.5">
-            <a href="#busca-rapida"
-              class="sidebar-link block px-3 py-1.5 text-sm text-zinc-400 border-l-2 border-transparent rounded-r-md transition-all">Busca
-              rápida</a>
-            <a href="#busca-avancada"
-              class="sidebar-link block px-3 py-1.5 text-sm text-zinc-400 border-l-2 border-transparent rounded-r-md transition-all">Busca
-              avançada</a>
-            <a href="#detalhes-empresa"
-              class="sidebar-link block px-3 py-1.5 text-sm text-zinc-400 border-l-2 border-transparent rounded-r-md transition-all">Detalhes
-              da empresa</a>
-            <a href="#detalhes-cnpj"
-              class="sidebar-link block px-3 py-1.5 text-sm text-zinc-400 border-l-2 border-transparent rounded-r-md transition-all">Detalhes
-              por CNPJ</a>
-          </div>
-        </div>
-
-        <!-- Referência -->
-        <div>
-          <h4 class="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-3 px-3">Referência</h4>
-          <div class="space-y-0.5">
-            <a href="#cnaes"
-              class="sidebar-link block px-3 py-1.5 text-sm text-zinc-400 border-l-2 border-transparent rounded-r-md transition-all">CNAEs</a>
-            <a href="#estados"
-              class="sidebar-link block px-3 py-1.5 text-sm text-zinc-400 border-l-2 border-transparent rounded-r-md transition-all">Estados
-              e Municípios</a>
-            <a href="#natureza-juridica"
-              class="sidebar-link block px-3 py-1.5 text-sm text-zinc-400 border-l-2 border-transparent rounded-r-md transition-all">Natureza
-              Jurídica</a>
-          </div>
-        </div>
-
-        <!-- Webhooks de entrada -->
-        <div>
-          <h4 class="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-3 px-3">Webhooks de entrada</h4>
-          <div class="space-y-0.5">
-            <a href="#webhooks-visao-geral"
-              class="sidebar-link block px-3 py-1.5 text-sm text-zinc-400 border-l-2 border-transparent rounded-r-md transition-all">Visão geral</a>
-            <a href="#webhooks-secret-header"
-              class="sidebar-link block px-3 py-1.5 text-sm text-zinc-400 border-l-2 border-transparent rounded-r-md transition-all">Secret no header</a>
-            <a href="#webhooks-assinatura"
-              class="sidebar-link block px-3 py-1.5 text-sm text-zinc-400 border-l-2 border-transparent rounded-r-md transition-all">Opcional: assinatura</a>
-            <a href="#webhooks-payload"
-              class="sidebar-link block px-3 py-1.5 text-sm text-zinc-400 border-l-2 border-transparent rounded-r-md transition-all">Payload</a>
-            <a href="#webhooks-deduplicacao"
-              class="sidebar-link block px-3 py-1.5 text-sm text-zinc-400 border-l-2 border-transparent rounded-r-md transition-all">Deduplicação</a>
-            <a href="#webhooks-respostas"
-              class="sidebar-link block px-3 py-1.5 text-sm text-zinc-400 border-l-2 border-transparent rounded-r-md transition-all">Respostas e limites</a>
-          </div>
-        </div>
-
-      </nav>
-    </aside>
-
-    <!-- Main Content -->
-    <main class="flex-1 lg:ml-64 min-h-screen">
-      <div class="max-w-4xl mx-auto px-6 py-12">
-
-        <!-- Introdução -->
-        <section id="introducao" class="mb-20">
-          <h1 class="text-4xl font-extrabold text-white mb-4">API da BuscaLead</h1>
-          <p class="text-lg text-zinc-400 mb-8 max-w-2xl">
-            Acesse nossa base de <strong class="text-white">+29 milhões de empresas ativas</strong> do Brasil via API REST.
-            Consulte CNPJs, busque por filtros avançados e enriqueça seus dados - direto no seu sistema.
-            A API está disponível em <strong class="text-white">todos os planos pagos (a partir do Starter)</strong>.
-          </p>
-
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
-            <div class="p-4 rounded-xl bg-zinc-900/50 border border-zinc-800/50">
-              <div class="text-emerald-500 font-bold text-2xl mb-1">+29 mi</div>
-              <div class="text-zinc-500 text-sm">Empresas ativas</div>
-            </div>
-            <div class="p-4 rounded-xl bg-zinc-900/50 border border-zinc-800/50">
-              <div class="text-emerald-500 font-bold text-2xl mb-1">REST</div>
-              <div class="text-zinc-500 text-sm">JSON + HTTPS</div>
-            </div>
-            <div class="p-4 rounded-xl bg-zinc-900/50 border border-zinc-800/50">
-              <div class="text-emerald-500 font-bold text-2xl mb-1">Starter+</div>
-              <div class="text-zinc-500 text-sm">Em todos os planos pagos</div>
-            </div>
-          </div>
-
-          <div class="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/20">
-            <div class="flex items-start gap-3">
-              <i class="ri-information-line text-emerald-500 mt-0.5"></i>
-              <div>
-                <p class="text-sm text-zinc-300 font-medium mb-1">Base URL</p>
-                <code class="text-emerald-400 text-sm font-mono">https://api.buscalead.com/v1</code>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- Autenticação -->
-        <section id="autenticacao" class="mb-20">
-          <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-3">
-            <i class="ri-key-line text-emerald-500"></i> Autenticação
-          </h2>
-          <p class="text-zinc-400 mb-6">
-            Todas as requisições autenticadas devem incluir o header <code
-              class="text-emerald-400 bg-zinc-900 px-1.5 py-0.5 rounded text-xs">Authorization</code> com sua API Key.
-          </p>
-          <p class="text-zinc-400 mb-6">
-            Você pode gerar sua API Key na <a href="https://buscalead.com/office/settings"
-              class="text-emerald-500 hover:underline">página de configurações</a> da plataforma.
-          </p>
-
-          <div class="mb-6 p-4 rounded-xl bg-yellow-500/5 border border-yellow-500/20">
-            <div class="flex items-start gap-3">
-              <i class="ri-error-warning-line text-yellow-500 mt-0.5"></i>
-              <p class="text-sm text-zinc-400"><strong class="text-yellow-400">Assinatura obrigatória:</strong> a API está
-                disponível em todos os planos pagos (a partir do Starter). O uso via API Key requer uma assinatura ativa.
-                Requisições com API Key sem assinatura retornam <code
-                  class="text-yellow-400 bg-zinc-900 px-1.5 py-0.5 rounded text-xs">402 Payment Required</code>. <a
-                  href="https://buscalead.com/office/subscription" class="text-emerald-500 hover:underline">Assine
-                  aqui</a>.</p>
-            </div>
-          </div>
-
-          <!-- Code Window -->
-          <div class="code-window rounded-2xl bg-zinc-900 border border-zinc-800 overflow-hidden shadow-2xl mb-6">
-            <div class="flex items-center justify-between px-4 py-3 bg-zinc-900/80 border-b border-zinc-800">
-              <div class="flex items-center gap-3">
-                <div class="flex gap-1.5">
-                  <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
-                  <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
-                  <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
-                </div>
-                <span class="text-xs text-zinc-500 font-mono">Header de autenticação</span>
-              </div>
-              <button onclick="copyCode(this)"
-                class="copy-btn text-xs text-zinc-500 hover:text-zinc-300 transition-colors flex items-center gap-1">
-                <i class="ri-file-copy-line"></i> Copiar
-              </button>
-            </div>
-            <div class="p-5 font-mono text-sm leading-relaxed overflow-x-auto">
-              <code>
-                <span class="text-zinc-500">Authorization:</span> <span class="text-blue-400">Bearer</span> <span class="text-emerald-400">sua_api_key_aqui</span>
-              </code>
-            </div>
-          </div>
-
-          <!-- Exemplo completo -->
-          <div class="code-window rounded-2xl bg-zinc-900 border border-zinc-800 overflow-hidden shadow-2xl">
-            <div class="flex items-center justify-between px-4 py-3 bg-zinc-900/80 border-b border-zinc-800">
-              <div class="flex items-center gap-3">
-                <div class="flex gap-1.5">
-                  <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
-                  <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
-                  <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
-                </div>
-                <span class="text-xs text-zinc-500 font-mono">Exemplo com cURL</span>
-              </div>
-              <button onclick="copyCode(this)"
-                class="copy-btn text-xs text-zinc-500 hover:text-zinc-300 transition-colors flex items-center gap-1">
-                <i class="ri-file-copy-line"></i> Copiar
-              </button>
-            </div>
-            <div class="p-5 font-mono text-sm leading-relaxed overflow-x-auto">
-              <code>
-                <div><span class="text-yellow-300">curl</span> <span class="text-emerald-400">'https://api.buscalead.com/v1/empresas/search?query=techsoft'</span> \</div>
-                <div class="pl-4"><span class="text-blue-400">-H</span> <span class="text-emerald-400">'Authorization: Bearer sua_api_key_aqui'</span></div>
-              </code>
-            </div>
-          </div>
-        </section>
-
-        <!-- Rate Limiting -->
-        <section id="rate-limiting" class="mb-20">
-          <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-3">
-            <i class="ri-speed-line text-emerald-500"></i> Rate Limiting
-          </h2>
-          <p class="text-zinc-400 mb-6">
-            A API possui limites de requisições por minuto para garantir estabilidade. Os limites variam conforme o tipo
-            de autenticação.
-          </p>
-
-          <div class="overflow-hidden rounded-xl border border-zinc-800">
-            <table class="w-full text-sm">
-              <thead>
-                <tr class="bg-zinc-900/50 border-b border-zinc-800">
-                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Tipo</th>
-                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Limite</th>
-                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Janela</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-zinc-800/50">
-                <tr>
-                  <td class="py-3 px-4 text-zinc-300">Sem autenticação <span class="text-zinc-600">(busca de
-                      empresas)</span></td>
-                  <td class="py-3 px-4"><code class="text-yellow-400">15</code></td>
-                  <td class="py-3 px-4 text-zinc-500">1 minuto</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4 text-zinc-300">Sem autenticação <span class="text-zinc-600">(demais rotas)</span>
-                  </td>
-                  <td class="py-3 px-4"><code class="text-yellow-400">20</code></td>
-                  <td class="py-3 px-4 text-zinc-500">1 minuto</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4 text-zinc-300">Com API Key</td>
-                  <td class="py-3 px-4"><code class="text-emerald-400">60</code></td>
-                  <td class="py-3 px-4 text-zinc-500">1 minuto</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4 text-zinc-300">Rotas de referência <span class="text-zinc-600">(CNAEs,
-                      Estados...)</span></td>
-                  <td class="py-3 px-4"><code class="text-blue-400">200</code></td>
-                  <td class="py-3 px-4 text-zinc-500">1 minuto</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div class="mt-4 p-4 rounded-xl bg-yellow-500/5 border border-yellow-500/20">
-            <div class="flex items-start gap-3">
-              <i class="ri-error-warning-line text-yellow-500 mt-0.5"></i>
-              <p class="text-sm text-zinc-400">Ao exceder o limite, a API retorna <code
-                  class="text-yellow-400 bg-zinc-900 px-1.5 py-0.5 rounded text-xs">429 Too Many Requests</code> com o
-                tempo restante no header <code
-                  class="text-yellow-400 bg-zinc-900 px-1.5 py-0.5 rounded text-xs">Retry-After</code>.</p>
-            </div>
-          </div>
-        </section>
-
-        <!-- Erros -->
-        <section id="erros" class="mb-20">
-          <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-3">
-            <i class="ri-error-warning-line text-emerald-500"></i> Erros
-          </h2>
-          <p class="text-zinc-400 mb-6">
-            Todas as respostas de erro seguem o mesmo formato JSON.
-          </p>
-
-          <div class="code-window rounded-2xl bg-zinc-900 border border-zinc-800 overflow-hidden shadow-2xl mb-6">
-            <div class="flex items-center justify-between px-4 py-3 bg-zinc-900/80 border-b border-zinc-800">
-              <div class="flex items-center gap-3">
-                <div class="flex gap-1.5">
-                  <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
-                  <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
-                  <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
-                </div>
-                <span class="text-xs text-zinc-500 font-mono">Formato de erro</span>
-              </div>
-            </div>
-            <div class="p-5 font-mono text-sm leading-relaxed overflow-x-auto">
-              <code>
-                <div class="text-zinc-500">{</div>
-                <div class="pl-4"><span class="text-blue-300">"title"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"Validation Error"</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-4"><span class="text-blue-300">"message"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"O campo 'query' é obrigatório"</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-4"><span class="text-blue-300">"code"</span><span class="text-zinc-500">:</span> <span class="text-yellow-300">400</span></div>
-                <div class="text-zinc-500">}</div>
-              </code>
-            </div>
-          </div>
-
-          <div class="overflow-hidden rounded-xl border border-zinc-800">
-            <table class="w-full text-sm">
-              <thead>
-                <tr class="bg-zinc-900/50 border-b border-zinc-800">
-                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Código</th>
-                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Descrição</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-zinc-800/50">
-                <tr>
-                  <td class="py-3 px-4"><code class="text-emerald-400">200</code></td>
-                  <td class="py-3 px-4 text-zinc-400">Sucesso</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4"><code class="text-emerald-400">201</code></td>
-                  <td class="py-3 px-4 text-zinc-400">Recurso criado</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4"><code class="text-yellow-400">400</code></td>
-                  <td class="py-3 px-4 text-zinc-400">Erro de validação nos parâmetros</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4"><code class="text-yellow-400">401</code></td>
-                  <td class="py-3 px-4 text-zinc-400">Não autenticado - API Key ausente ou inválida</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4"><code class="text-yellow-400">402</code></td>
-                  <td class="py-3 px-4 text-zinc-400">Assinatura ativa necessária para uso via API Key</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4"><code class="text-yellow-400">403</code></td>
-                  <td class="py-3 px-4 text-zinc-400">Acesso negado - requisição identificada como bot ou scraper</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4"><code class="text-yellow-400">404</code></td>
-                  <td class="py-3 px-4 text-zinc-400">Recurso não encontrado</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4"><code class="text-yellow-400">429</code></td>
-                  <td class="py-3 px-4 text-zinc-400">Rate limit excedido</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4"><code class="text-red-400">500</code></td>
-                  <td class="py-3 px-4 text-zinc-400">Erro interno do servidor</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <!-- Paginação -->
-        <section id="paginacao" class="mb-20">
-          <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-3">
-            <i class="ri-pages-line text-emerald-500"></i> Paginação
-          </h2>
-          <p class="text-zinc-400 mb-6">
-            Todos os endpoints de listagem retornam resultados paginados com o mesmo formato.
-          </p>
-
-          <div class="code-window rounded-2xl bg-zinc-900 border border-zinc-800 overflow-hidden shadow-2xl">
-            <div class="flex items-center justify-between px-4 py-3 bg-zinc-900/80 border-b border-zinc-800">
-              <div class="flex items-center gap-3">
-                <div class="flex gap-1.5">
-                  <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
-                  <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
-                  <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
-                </div>
-                <span class="text-xs text-zinc-500 font-mono">Formato de paginação</span>
-              </div>
-            </div>
-            <div class="p-5 font-mono text-sm leading-relaxed overflow-x-auto">
-              <code>
-                <div class="text-zinc-500">{</div>
-                <div class="pl-4"><span class="text-blue-300">"page"</span><span class="text-zinc-500">:</span> <span class="text-yellow-300">0</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-4"><span class="text-blue-300">"pageSize"</span><span class="text-zinc-500">:</span> <span class="text-yellow-300">10</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-4"><span class="text-blue-300">"total"</span><span class="text-zinc-500">:</span> <span class="text-yellow-300">12847</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-4"><span class="text-blue-300">"totalPages"</span><span class="text-zinc-500">:</span> <span class="text-yellow-300">1285</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-4"><span class="text-blue-300">"results"</span><span class="text-zinc-500">:</span> <span class="text-zinc-500">[...]</span></div>
-                <div class="text-zinc-500">}</div>
-              </code>
-            </div>
-          </div>
-        </section>
-
-        <!-- Divider -->
-        <div class="border-t border-zinc-800/50 my-16"></div>
-        <h2 class="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-10">Endpoints - Empresas</h2>
-
-        <!-- Busca Rápida -->
-        <section id="busca-rapida" class="mb-20">
-          <div class="flex items-center gap-3 mb-4">
-            <span
-              class="text-xs font-bold font-mono px-2.5 py-1 rounded-md bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">GET</span>
-            <h2 class="text-2xl font-bold text-white">Busca rápida</h2>
-          </div>
-          <p class="text-zinc-400 mb-2">Busca por texto livre com paginação. Ideal para autocomplete e buscas simples.
-          </p>
-          <code
-            class="text-sm font-mono text-emerald-400 bg-zinc-900 px-3 py-1.5 rounded-lg border border-zinc-800 inline-block mb-6">/empresas/search</code>
-
-          <!-- Parâmetros -->
-          <h3 class="text-sm font-bold text-white mb-3 mt-8">Query Parameters</h3>
-          <div class="overflow-hidden rounded-xl border border-zinc-800 mb-6">
-            <table class="w-full text-sm">
-              <thead>
-                <tr class="bg-zinc-900/50 border-b border-zinc-800">
-                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Parâmetro</th>
-                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Tipo</th>
-                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Padrão</th>
-                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Descrição</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-zinc-800/50">
-                <tr>
-                  <td class="py-3 px-4"><code class="text-emerald-400">query</code></td>
-                  <td class="py-3 px-4 text-zinc-500">string</td>
-                  <td class="py-3 px-4 text-zinc-600">-</td>
-                  <td class="py-3 px-4 text-zinc-400">Termo de busca (razão social, nome fantasia, CNPJ)</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4"><code class="text-emerald-400">page</code></td>
-                  <td class="py-3 px-4 text-zinc-500">number</td>
-                  <td class="py-3 px-4 text-zinc-500">0</td>
-                  <td class="py-3 px-4 text-zinc-400">Número da página</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4"><code class="text-emerald-400">pageSize</code></td>
-                  <td class="py-3 px-4 text-zinc-500">number</td>
-                  <td class="py-3 px-4 text-zinc-500">10</td>
-                  <td class="py-3 px-4 text-zinc-400">Resultados por página <span class="text-zinc-600">(máx.
-                      100)</span></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <!-- Exemplo request -->
-          <div class="code-window rounded-2xl bg-zinc-900 border border-zinc-800 overflow-hidden shadow-2xl mb-4">
-            <div class="flex items-center justify-between px-4 py-3 bg-zinc-900/80 border-b border-zinc-800">
-              <div class="flex items-center gap-3">
-                <div class="flex gap-1.5">
-                  <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
-                  <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
-                  <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
-                </div>
-                <span class="text-xs text-zinc-500 font-mono">GET /empresas/search</span>
-              </div>
-              <button onclick="copyCode(this)"
-                class="copy-btn text-xs text-zinc-500 hover:text-zinc-300 transition-colors flex items-center gap-1">
-                <i class="ri-file-copy-line"></i> Copiar
-              </button>
-            </div>
-            <div class="p-5 font-mono text-sm leading-relaxed overflow-x-auto">
-              <code>
-                <div><span class="text-yellow-300">curl</span> <span class="text-emerald-400">'https://api.buscalead.com/v1/empresas/search?query=techsoft&page=0&pageSize=10'</span> \</div>
-                <div class="pl-4"><span class="text-blue-400">-H</span> <span class="text-emerald-400">'Authorization: Bearer sua_api_key_aqui'</span></div>
-              </code>
-            </div>
-          </div>
-
-          <!-- Exemplo response -->
-          <div class="code-window rounded-2xl bg-zinc-900 border border-zinc-800 overflow-hidden shadow-2xl">
-            <div class="flex items-center justify-between px-4 py-3 bg-zinc-900/80 border-b border-zinc-800">
-              <div class="flex items-center gap-3">
-                <div class="flex gap-1.5">
-                  <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
-                  <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
-                  <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
-                </div>
-                <span class="text-xs text-zinc-500 font-mono">Resposta - 200 OK</span>
-              </div>
-            </div>
-            <div class="p-5 font-mono text-sm leading-relaxed overflow-x-auto">
-              <code>
-                <div class="text-zinc-500">{</div>
-                <div class="pl-4"><span class="text-blue-300">"page"</span><span class="text-zinc-500">:</span> <span class="text-yellow-300">0</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-4"><span class="text-blue-300">"pageSize"</span><span class="text-zinc-500">:</span> <span class="text-yellow-300">10</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-4"><span class="text-blue-300">"total"</span><span class="text-zinc-500">:</span> <span class="text-yellow-300">3</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-4"><span class="text-blue-300">"totalPages"</span><span class="text-zinc-500">:</span> <span class="text-yellow-300">1</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-4"><span class="text-blue-300">"results"</span><span class="text-zinc-500">: [</span></div>
-                <div class="pl-6 text-zinc-500">{</div>
-                <div class="pl-8"><span class="text-blue-300">"cnpj_completo"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"12345678000199"</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-8"><span class="text-blue-300">"nome_fantasia"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"TechSoft"</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-8"><span class="text-blue-300">"slug"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"techsoft"</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-8"><span class="text-blue-300">"situacao_cadastral"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"01"</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-8"><span class="text-blue-300">"telefone_1"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"1133334444"</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-8"><span class="text-blue-300">"ddd_1"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"11"</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-8"><span class="text-blue-300">"correio_eletronico"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"contato@techsoft.com"</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-8"><span class="text-blue-300">"uf"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"SP"</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-8"><span class="text-blue-300">"cnae_fiscal_principal"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"6209100"</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-8"><span class="text-blue-300">"data_inicio_atividade"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"2019-03-15"</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-8"><span class="text-blue-300">"empresa"</span><span class="text-zinc-500">: {</span></div>
-                <div class="pl-10"><span class="text-blue-300">"razao_social"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"TechSoft Soluções em TI Ltda"</span></div>
-                <div class="pl-8"><span class="text-zinc-500">},</span></div>
-                <div class="pl-8"><span class="text-blue-300">"municipio_ref"</span><span class="text-zinc-500">: {</span></div>
-                <div class="pl-10"><span class="text-blue-300">"descricao"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"São Paulo"</span></div>
-                <div class="pl-8"><span class="text-zinc-500">}</span></div>
-                <div class="pl-6 text-zinc-500">}</div>
-                <div class="pl-4 text-zinc-500">]</div>
-                <div class="text-zinc-500">}</div>
-              </code>
-            </div>
-          </div>
-        </section>
-
-        <!-- Busca Avançada -->
-        <section id="busca-avancada" class="mb-20">
-          <div class="flex items-center gap-3 mb-4">
-            <span
-              class="text-xs font-bold font-mono px-2.5 py-1 rounded-md bg-blue-500/10 text-blue-400 border border-blue-500/20">POST</span>
-            <h2 class="text-2xl font-bold text-white">Busca avançada</h2>
-          </div>
-          <p class="text-zinc-400 mb-2">Busca com filtros avançados (CNAE, estado, município, porte, capital social e
-            mais).</p>
-          <code
-            class="text-sm font-mono text-emerald-400 bg-zinc-900 px-3 py-1.5 rounded-lg border border-zinc-800 inline-block mb-6">/empresas/search</code>
-
-          <h3 class="text-sm font-bold text-white mb-3 mt-8">Body Parameters</h3>
-          <div class="overflow-hidden rounded-xl border border-zinc-800 mb-6">
-            <table class="w-full text-sm">
-              <thead>
-                <tr class="bg-zinc-900/50 border-b border-zinc-800">
-                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Campo</th>
-                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Tipo</th>
-                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Descrição</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-zinc-800/50">
-                <tr>
-                  <td class="py-3 px-4"><code class="text-emerald-400">filters.cnae_fiscal_principal</code></td>
-                  <td class="py-3 px-4 text-zinc-500">string[]</td>
-                  <td class="py-3 px-4 text-zinc-400">Códigos CNAE principais</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4"><code class="text-emerald-400">filters.estado</code></td>
-                  <td class="py-3 px-4 text-zinc-500">string[]</td>
-                  <td class="py-3 px-4 text-zinc-400">Siglas dos estados (ex: ["SP", "RJ"])</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4"><code class="text-emerald-400">filters.municipio</code></td>
-                  <td class="py-3 px-4 text-zinc-500">string[]</td>
-                  <td class="py-3 px-4 text-zinc-400">Códigos de municípios</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4"><code class="text-emerald-400">filters.situacao_cadastral</code></td>
-                  <td class="py-3 px-4 text-zinc-500">string[]</td>
-                  <td class="py-3 px-4 text-zinc-400">Situação cadastral (01=ativa, 02=baixada...)</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4"><code class="text-emerald-400">filters.porte</code></td>
-                  <td class="py-3 px-4 text-zinc-500">string[]</td>
-                  <td class="py-3 px-4 text-zinc-400">Porte da empresa</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4"><code class="text-emerald-400">filters.natureza_juridica</code></td>
-                  <td class="py-3 px-4 text-zinc-500">string[]</td>
-                  <td class="py-3 px-4 text-zinc-400">Códigos de natureza jurídica</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4"><code class="text-emerald-400">filters.capital_social_de</code></td>
-                  <td class="py-3 px-4 text-zinc-500">number</td>
-                  <td class="py-3 px-4 text-zinc-400">Capital social mínimo</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4"><code class="text-emerald-400">filters.capital_social_ate</code></td>
-                  <td class="py-3 px-4 text-zinc-500">number</td>
-                  <td class="py-3 px-4 text-zinc-400">Capital social máximo</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4"><code class="text-emerald-400">filters.razao_social</code></td>
-                  <td class="py-3 px-4 text-zinc-500">string</td>
-                  <td class="py-3 px-4 text-zinc-400">Busca por razão social</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4"><code class="text-emerald-400">filters.contem_email</code></td>
-                  <td class="py-3 px-4 text-zinc-500">boolean</td>
-                  <td class="py-3 px-4 text-zinc-400">Apenas empresas com e-mail</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4"><code class="text-emerald-400">filters.contem_celular</code></td>
-                  <td class="py-3 px-4 text-zinc-500">boolean</td>
-                  <td class="py-3 px-4 text-zinc-400">Apenas empresas com celular</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4"><code class="text-emerald-400">filters.somente_mei</code></td>
-                  <td class="py-3 px-4 text-zinc-500">boolean</td>
-                  <td class="py-3 px-4 text-zinc-400">Apenas MEI</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4"><code class="text-emerald-400">filters.excluir_mei</code></td>
-                  <td class="py-3 px-4 text-zinc-500">boolean</td>
-                  <td class="py-3 px-4 text-zinc-400">Excluir MEI dos resultados</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4"><code class="text-emerald-400">filters.somente_matriz</code></td>
-                  <td class="py-3 px-4 text-zinc-500">boolean</td>
-                  <td class="py-3 px-4 text-zinc-400">Apenas matrizes</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4"><code class="text-emerald-400">filters.ignorar_ja_importados</code></td>
-                  <td class="py-3 px-4 text-zinc-500">boolean</td>
-                  <td class="py-3 px-4 text-zinc-400">Exclui dos resultados os leads já importados pela organização.
-                    Requer <code class="text-emerald-400">organization_id</code></td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4"><code class="text-emerald-400">organization_id</code></td>
-                  <td class="py-3 px-4 text-zinc-500">string</td>
-                  <td class="py-3 px-4 text-zinc-400">ID da organização. Obrigatório quando <code
-                      class="text-emerald-400">filters.ignorar_ja_importados</code> é <code
-                      class="text-yellow-300">true</code></td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4"><code class="text-emerald-400">page</code></td>
-                  <td class="py-3 px-4 text-zinc-500">number</td>
-                  <td class="py-3 px-4 text-zinc-400">Número da página (padrão: 0)</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4"><code class="text-emerald-400">limit</code></td>
-                  <td class="py-3 px-4 text-zinc-500">number</td>
-                  <td class="py-3 px-4 text-zinc-400">Resultados por página (padrão: 10)</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <!-- Exemplo request -->
-          <div class="code-window rounded-2xl bg-zinc-900 border border-zinc-800 overflow-hidden shadow-2xl mb-4">
-            <div class="flex items-center justify-between px-4 py-3 bg-zinc-900/80 border-b border-zinc-800">
-              <div class="flex items-center gap-3">
-                <div class="flex gap-1.5">
-                  <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
-                  <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
-                  <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
-                </div>
-                <span class="text-xs text-zinc-500 font-mono">POST /empresas/search</span>
-              </div>
-              <button onclick="copyCode(this)"
-                class="copy-btn text-xs text-zinc-500 hover:text-zinc-300 transition-colors flex items-center gap-1">
-                <i class="ri-file-copy-line"></i> Copiar
-              </button>
-            </div>
-            <div class="p-5 font-mono text-sm leading-relaxed overflow-x-auto">
-              <code>
-                <div><span class="text-yellow-300">curl</span> <span class="text-blue-400">-X POST</span> <span class="text-emerald-400">'https://api.buscalead.com/v1/empresas/search'</span> \</div>
-                <div class="pl-4"><span class="text-blue-400">-H</span> <span class="text-emerald-400">'Authorization: Bearer sua_api_key_aqui'</span> \</div>
-                <div class="pl-4"><span class="text-blue-400">-H</span> <span class="text-emerald-400">'Content-Type: application/json'</span> \</div>
-                <div class="pl-4"><span class="text-blue-400">-d</span> <span class="text-emerald-400">'{</span></div>
-                <div class="pl-8"><span class="text-blue-300">"filters"</span><span class="text-zinc-500">: {</span></div>
-                <div class="pl-10"><span class="text-blue-300">"cnae_fiscal_principal"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">["6209100"]</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-10"><span class="text-blue-300">"estado"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">["SP"]</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-10"><span class="text-blue-300">"situacao_cadastral"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">["01"]</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-10"><span class="text-blue-300">"contem_email"</span><span class="text-zinc-500">:</span> <span class="text-yellow-300">true</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-10"><span class="text-blue-300">"ignorar_ja_importados"</span><span class="text-zinc-500">:</span> <span class="text-yellow-300">true</span></div>
-                <div class="pl-8"><span class="text-zinc-500">},</span></div>
-                <div class="pl-8"><span class="text-blue-300">"organization_id"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"uuid-da-organizacao"</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-8"><span class="text-blue-300">"page"</span><span class="text-zinc-500">:</span> <span class="text-yellow-300">0</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-8"><span class="text-blue-300">"limit"</span><span class="text-zinc-500">:</span> <span class="text-yellow-300">10</span></div>
-                <div class="pl-4"><span class="text-emerald-400">}'</span></div>
-              </code>
-            </div>
-          </div>
-        </section>
-
-        <!-- Detalhes da Empresa -->
-        <section id="detalhes-empresa" class="mb-20">
-          <div class="flex items-center gap-3 mb-4">
-            <span
-              class="text-xs font-bold font-mono px-2.5 py-1 rounded-md bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">GET</span>
-            <h2 class="text-2xl font-bold text-white">Detalhes da empresa</h2>
-          </div>
-          <p class="text-zinc-400 mb-2">Retorna informações completas de uma empresa: dados cadastrais, sócios, CNAEs
-            secundários, endereço e mais.</p>
-          <code
-            class="text-sm font-mono text-emerald-400 bg-zinc-900 px-3 py-1.5 rounded-lg border border-zinc-800 inline-block mb-6">/empresas/search/:slug</code>
-
-          <h3 class="text-sm font-bold text-white mb-3 mt-8">Path Parameters</h3>
-          <div class="overflow-hidden rounded-xl border border-zinc-800 mb-6">
-            <table class="w-full text-sm">
-              <thead>
-                <tr class="bg-zinc-900/50 border-b border-zinc-800">
-                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Parâmetro</th>
-                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Tipo</th>
-                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Descrição</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td class="py-3 px-4"><code class="text-emerald-400">slug</code></td>
-                  <td class="py-3 px-4 text-zinc-500">string</td>
-                  <td class="py-3 px-4 text-zinc-400">Slug da empresa (retornado na busca)</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div class="code-window rounded-2xl bg-zinc-900 border border-zinc-800 overflow-hidden shadow-2xl mb-4">
-            <div class="flex items-center justify-between px-4 py-3 bg-zinc-900/80 border-b border-zinc-800">
-              <div class="flex items-center gap-3">
-                <div class="flex gap-1.5">
-                  <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
-                  <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
-                  <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
-                </div>
-                <span class="text-xs text-zinc-500 font-mono">GET /empresas/search/:slug</span>
-              </div>
-              <button onclick="copyCode(this)"
-                class="copy-btn text-xs text-zinc-500 hover:text-zinc-300 transition-colors flex items-center gap-1">
-                <i class="ri-file-copy-line"></i> Copiar
-              </button>
-            </div>
-            <div class="p-5 font-mono text-sm leading-relaxed overflow-x-auto">
-              <code>
-                <div><span class="text-yellow-300">curl</span> <span class="text-emerald-400">'https://api.buscalead.com/v1/empresas/search/techsoft'</span> \</div>
-                <div class="pl-4"><span class="text-blue-400">-H</span> <span class="text-emerald-400">'Authorization: Bearer sua_api_key_aqui'</span></div>
-              </code>
-            </div>
-          </div>
-
-          <p class="text-sm text-zinc-500 mt-4 mb-2">A resposta inclui:</p>
-          <ul class="space-y-1.5 text-sm text-zinc-400 mb-6">
-            <li class="flex items-center gap-2"><i class="ri-check-line text-emerald-500 text-xs"></i> Dados cadastrais
-              completos (CNPJ, razão social, nome fantasia)</li>
-            <li class="flex items-center gap-2"><i class="ri-check-line text-emerald-500 text-xs"></i> Capital social,
-              porte, natureza jurídica</li>
-            <li class="flex items-center gap-2"><i class="ri-check-line text-emerald-500 text-xs"></i> Telefones,
-              e-mail, endereço completo</li>
-            <li class="flex items-center gap-2"><i class="ri-check-line text-emerald-500 text-xs"></i> Lista de sócios
-              com qualificação</li>
-            <li class="flex items-center gap-2"><i class="ri-check-line text-emerald-500 text-xs"></i> CNAE principal e
-              secundários com descrição</li>
-            <li class="flex items-center gap-2"><i class="ri-check-line text-emerald-500 text-xs"></i> Dados do Simples
-              Nacional / MEI</li>
-          </ul>
-        </section>
-
-        <!-- Detalhes por CNPJ -->
-        <section id="detalhes-cnpj" class="mb-20">
-          <div class="flex items-center gap-3 mb-4">
-            <span
-              class="text-xs font-bold font-mono px-2.5 py-1 rounded-md bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">GET</span>
-            <h2 class="text-2xl font-bold text-white">Detalhes da empresa por CNPJ</h2>
-          </div>
-          <p class="text-zinc-400 mb-2">Retorna informações completas de uma empresa a partir do CNPJ. Aceita CNPJ com
-            ou sem formatação (pontos, barras e hífens são removidos automaticamente).</p>
-          <code
-            class="text-sm font-mono text-emerald-400 bg-zinc-900 px-3 py-1.5 rounded-lg border border-zinc-800 inline-block mb-6">/empresas/cnpj/:cnpj</code>
-
-          <h3 class="text-sm font-bold text-white mb-3 mt-8">Path Parameters</h3>
-          <div class="overflow-hidden rounded-xl border border-zinc-800 mb-6">
-            <table class="w-full text-sm">
-              <thead>
-                <tr class="bg-zinc-900/50 border-b border-zinc-800">
-                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Parâmetro</th>
-                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Tipo</th>
-                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Descrição</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td class="py-3 px-4"><code class="text-emerald-400">cnpj</code></td>
-                  <td class="py-3 px-4 text-zinc-500">string</td>
-                  <td class="py-3 px-4 text-zinc-400">CNPJ da empresa (ex: <code
-                      class="text-zinc-300">06990590000123</code> ou <code
-                      class="text-zinc-300">06.990.590/0001-23</code>)</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div class="code-window rounded-2xl bg-zinc-900 border border-zinc-800 overflow-hidden shadow-2xl mb-4">
-            <div class="flex items-center justify-between px-4 py-3 bg-zinc-900/80 border-b border-zinc-800">
-              <div class="flex items-center gap-3">
-                <div class="flex gap-1.5">
-                  <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
-                  <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
-                  <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
-                </div>
-                <span class="text-xs text-zinc-500 font-mono">GET /empresas/cnpj/:cnpj</span>
-              </div>
-              <button onclick="copyCode(this)"
-                class="copy-btn text-xs text-zinc-500 hover:text-zinc-300 transition-colors flex items-center gap-1">
-                <i class="ri-file-copy-line"></i> Copiar
-              </button>
-            </div>
-            <div class="p-5 font-mono text-sm leading-relaxed overflow-x-auto">
-              <code>
-                <div><span class="text-yellow-300">curl</span> <span class="text-emerald-400">'https://api.buscalead.com/v1/empresas/cnpj/06990590000123'</span> \</div>
-                <div class="pl-4"><span class="text-blue-400">-H</span> <span class="text-emerald-400">'Authorization: Bearer sua_api_key_aqui'</span></div>
-              </code>
-            </div>
-          </div>
-
-          <!-- Exemplo response -->
-          <div class="code-window rounded-2xl bg-zinc-900 border border-zinc-800 overflow-hidden shadow-2xl mb-6">
-            <div class="flex items-center justify-between px-4 py-3 bg-zinc-900/80 border-b border-zinc-800">
-              <div class="flex items-center gap-3">
-                <div class="flex gap-1.5">
-                  <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
-                  <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
-                  <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
-                </div>
-                <span class="text-xs text-zinc-500 font-mono">Resposta - 200 OK</span>
-              </div>
-            </div>
-            <div class="p-5 font-mono text-sm leading-relaxed overflow-x-auto">
-              <code>
-                <div class="text-zinc-500">{</div>
-                <div class="pl-4"><span class="text-blue-300">"cnpj_completo"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"06990590000123"</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-4"><span class="text-blue-300">"nome_fantasia"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"GOOGLE"</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-4"><span class="text-blue-300">"slug"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"google-brasil-internet-ltda-06990590000123"</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-4"><span class="text-blue-300">"situacao_cadastral"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"02"</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-4"><span class="text-blue-300">"telefone_1"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"30444000"</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-4"><span class="text-blue-300">"ddd_1"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"11"</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-4"><span class="text-blue-300">"correio_eletronico"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"contato@google.com.br"</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-4"><span class="text-blue-300">"uf"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"SP"</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-4"><span class="text-blue-300">"cnae_fiscal_principal"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"6311900"</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-4"><span class="text-blue-300">"empresa"</span><span class="text-zinc-500">: {</span></div>
-                <div class="pl-6"><span class="text-blue-300">"razao_social"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"GOOGLE BRASIL INTERNET LTDA"</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-6"><span class="text-blue-300">"capital_social"</span><span class="text-zinc-500">:</span> <span class="text-yellow-300">1000000.00</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-6"><span class="text-blue-300">"porte"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"DEMAIS"</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-6"><span class="text-blue-300">"natureza_juridica_ref"</span><span class="text-zinc-500">: {</span></div>
-                <div class="pl-8"><span class="text-blue-300">"descricao"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"Sociedade Empresária Limitada"</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-8"><span class="text-blue-300">"codigo"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"2062"</span></div>
-                <div class="pl-6"><span class="text-zinc-500">},</span></div>
-                <div class="pl-6"><span class="text-blue-300">"dados_simples"</span><span class="text-zinc-500">:</span> <span class="text-zinc-500">null,</span></div>
-                <div class="pl-6"><span class="text-blue-300">"socios"</span><span class="text-zinc-500">: [</span></div>
-                <div class="pl-8"><span class="text-zinc-500">{</span></div>
-                <div class="pl-10"><span class="text-blue-300">"nome_socio"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"NOME DO SOCIO"</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-10"><span class="text-blue-300">"cnpj_cpf_do_socio"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"***000000**"</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-10"><span class="text-blue-300">"qualificacao_do_socio"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"49"</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-10"><span class="text-blue-300">"qualificacao_ref"</span><span class="text-zinc-500">: {</span></div>
-                <div class="pl-12"><span class="text-blue-300">"codigo"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"49"</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-12"><span class="text-blue-300">"descricao"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"Sócio-Administrador"</span></div>
-                <div class="pl-10"><span class="text-zinc-500">},</span></div>
-                <div class="pl-10"><span class="text-blue-300">"data_entrada_sociedade"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"2020-01-15"</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-10"><span class="text-blue-300">"faixa_etaria"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"4"</span></div>
-                <div class="pl-8"><span class="text-zinc-500">}</span></div>
-                <div class="pl-6"><span class="text-zinc-500">]</span></div>
-                <div class="pl-4"><span class="text-zinc-500">},</span></div>
-                <div class="pl-4"><span class="text-blue-300">"cnae_principal_ref"</span><span class="text-zinc-500">: {</span></div>
-                <div class="pl-6"><span class="text-blue-300">"descricao"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"Tratamento de dados, provedores de serviços de aplicação e serviços de hospedagem na internet"</span></div>
-                <div class="pl-4"><span class="text-zinc-500">},</span></div>
-                <div class="pl-4"><span class="text-blue-300">"municipio_ref"</span><span class="text-zinc-500">: {</span></div>
-                <div class="pl-6"><span class="text-blue-300">"descricao"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"SAO PAULO"</span></div>
-                <div class="pl-4"><span class="text-zinc-500">},</span></div>
-                <div class="pl-4"><span class="text-blue-300">"cnae_fiscal_secundaria_descricoes"</span><span class="text-zinc-500">: [</span></div>
-                <div class="pl-6"><span class="text-zinc-500">{</span></div>
-                <div class="pl-8"><span class="text-blue-300">"codigo"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"6319400"</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-8"><span class="text-blue-300">"descricao"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"Portais, provedores de conteúdo e outros serviços de informação na internet"</span></div>
-                <div class="pl-6"><span class="text-zinc-500">}</span></div>
-                <div class="pl-4"><span class="text-zinc-500">]</span></div>
-                <div class="text-zinc-500">}</div>
-              </code>
-            </div>
-          </div>
-
-          <p class="text-sm text-zinc-500 mt-4 mb-2">A resposta inclui:</p>
-          <ul class="space-y-1.5 text-sm text-zinc-400 mb-6">
-            <li class="flex items-center gap-2"><i class="ri-check-line text-emerald-500 text-xs"></i> Dados cadastrais
-              completos (CNPJ, razão social, nome fantasia)</li>
-            <li class="flex items-center gap-2"><i class="ri-check-line text-emerald-500 text-xs"></i> Capital social,
-              porte, natureza jurídica</li>
-            <li class="flex items-center gap-2"><i class="ri-check-line text-emerald-500 text-xs"></i> Telefones,
-              e-mail, endereço completo</li>
-            <li class="flex items-center gap-2"><i class="ri-check-line text-emerald-500 text-xs"></i> Lista de sócios
-              com qualificação</li>
-            <li class="flex items-center gap-2"><i class="ri-check-line text-emerald-500 text-xs"></i> CNAE principal e
-              secundários com descrição</li>
-            <li class="flex items-center gap-2"><i class="ri-check-line text-emerald-500 text-xs"></i> Dados do Simples
-              Nacional / MEI</li>
-          </ul>
-
-          <div class="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/20">
-            <div class="flex items-start gap-3">
-              <i class="ri-information-line text-emerald-500 mt-0.5"></i>
-              <p class="text-sm text-zinc-400">O CNPJ é sanitizado automaticamente - caracteres não numéricos são
-                removidos. Os resultados são cacheados por 30 dias para melhor performance.</p>
-            </div>
-          </div>
-        </section>
-
-        <!-- Divider -->
-        <div class="border-t border-zinc-800/50 my-16"></div>
-        <h2 class="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-10">Endpoints - Referência</h2>
-
-        <!-- CNAEs -->
-        <section id="cnaes" class="mb-20">
-          <div class="flex items-center gap-3 mb-4">
-            <span
-              class="text-xs font-bold font-mono px-2.5 py-1 rounded-md bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">GET</span>
-            <h2 class="text-2xl font-bold text-white">CNAEs</h2>
-          </div>
-          <p class="text-zinc-400 mb-2">Busca de códigos CNAE com correspondência fuzzy e sem acentuação.</p>
-          <code
-            class="text-sm font-mono text-emerald-400 bg-zinc-900 px-3 py-1.5 rounded-lg border border-zinc-800 inline-block mb-6">/cnaes</code>
-
-          <h3 class="text-sm font-bold text-white mb-3 mt-8">Query Parameters</h3>
-          <div class="overflow-hidden rounded-xl border border-zinc-800 mb-6">
-            <table class="w-full text-sm">
-              <thead>
-                <tr class="bg-zinc-900/50 border-b border-zinc-800">
-                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Parâmetro</th>
-                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Tipo</th>
-                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Padrão</th>
-                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Descrição</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-zinc-800/50">
-                <tr>
-                  <td class="py-3 px-4"><code class="text-emerald-400">search</code></td>
-                  <td class="py-3 px-4 text-zinc-500">string</td>
-                  <td class="py-3 px-4 text-zinc-600">-</td>
-                  <td class="py-3 px-4 text-zinc-400">Busca por código ou descrição</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4"><code class="text-emerald-400">offset</code></td>
-                  <td class="py-3 px-4 text-zinc-500">number</td>
-                  <td class="py-3 px-4 text-zinc-500">0</td>
-                  <td class="py-3 px-4 text-zinc-400">Pular registros</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4"><code class="text-emerald-400">limit</code></td>
-                  <td class="py-3 px-4 text-zinc-500">number</td>
-                  <td class="py-3 px-4 text-zinc-500">20</td>
-                  <td class="py-3 px-4 text-zinc-400">Quantidade de resultados</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div class="code-window rounded-2xl bg-zinc-900 border border-zinc-800 overflow-hidden shadow-2xl">
-            <div class="flex items-center justify-between px-4 py-3 bg-zinc-900/80 border-b border-zinc-800">
-              <div class="flex items-center gap-3">
-                <div class="flex gap-1.5">
-                  <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
-                  <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
-                  <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
-                </div>
-                <span class="text-xs text-zinc-500 font-mono">GET /cnaes</span>
-              </div>
-              <button onclick="copyCode(this)"
-                class="copy-btn text-xs text-zinc-500 hover:text-zinc-300 transition-colors flex items-center gap-1">
-                <i class="ri-file-copy-line"></i> Copiar
-              </button>
-            </div>
-            <div class="p-5 font-mono text-sm leading-relaxed overflow-x-auto">
-              <code>
-                <div><span class="text-yellow-300">curl</span> <span class="text-emerald-400">'https://api.buscalead.com/v1/cnaes?search=tecnologia'</span> \</div>
-                <div class="pl-4"><span class="text-blue-400">-H</span> <span class="text-emerald-400">'Authorization: Bearer sua_api_key_aqui'</span></div>
-                <div class="mt-4 text-zinc-500">// Resposta</div>
-                <div class="text-zinc-500">{</div>
-                <div class="pl-4"><span class="text-blue-300">"results"</span><span class="text-zinc-500">: [</span></div>
-                <div class="pl-6"><span class="text-zinc-500">{ </span><span class="text-blue-300">"codigo"</span><span class="text-zinc-500">: </span><span class="text-emerald-400">"6209100"</span><span class="text-zinc-500">, </span><span class="text-blue-300">"descricao"</span><span class="text-zinc-500">: </span><span class="text-emerald-400">"6209100 - Consultoria em tecnologia da informação"</span><span class="text-zinc-500"> }</span></div>
-                <div class="pl-4"><span class="text-zinc-500">],</span></div>
-                <div class="pl-4"><span class="text-blue-300">"total"</span><span class="text-zinc-500">:</span> <span class="text-yellow-300">245</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-4"><span class="text-blue-300">"offset"</span><span class="text-zinc-500">:</span> <span class="text-yellow-300">0</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-4"><span class="text-blue-300">"limit"</span><span class="text-zinc-500">:</span> <span class="text-yellow-300">20</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-4"><span class="text-blue-300">"totalPages"</span><span class="text-zinc-500">:</span> <span class="text-yellow-300">13</span></div>
-                <div class="text-zinc-500">}</div>
-              </code>
-            </div>
-          </div>
-        </section>
-
-        <!-- Estados e Municípios -->
-        <section id="estados" class="mb-20">
-          <div class="flex items-center gap-3 mb-4">
-            <span
-              class="text-xs font-bold font-mono px-2.5 py-1 rounded-md bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">GET</span>
-            <h2 class="text-2xl font-bold text-white">Estados e Municípios</h2>
-          </div>
-          <p class="text-zinc-400 mb-6">Consulte os 27 estados brasileiros e seus municípios.</p>
-
-          <div class="space-y-4 mb-6">
-            <div class="p-4 rounded-xl bg-zinc-900/50 border border-zinc-800/50">
-              <code class="text-emerald-400 text-sm font-mono">GET /estados</code>
-              <p class="text-zinc-500 text-sm mt-1">Lista todos os estados</p>
-            </div>
-            <div class="p-4 rounded-xl bg-zinc-900/50 border border-zinc-800/50">
-              <code class="text-emerald-400 text-sm font-mono">GET /estados/:uf</code>
-              <p class="text-zinc-500 text-sm mt-1">Lista municípios de um ou mais estados (separar por vírgula: <code
-                  class="text-zinc-400">SP,RJ</code>)</p>
-            </div>
-          </div>
-
-          <div class="code-window rounded-2xl bg-zinc-900 border border-zinc-800 overflow-hidden shadow-2xl">
-            <div class="flex items-center justify-between px-4 py-3 bg-zinc-900/80 border-b border-zinc-800">
-              <div class="flex items-center gap-3">
-                <div class="flex gap-1.5">
-                  <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
-                  <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
-                  <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
-                </div>
-                <span class="text-xs text-zinc-500 font-mono">GET /estados/SP</span>
-              </div>
-              <button onclick="copyCode(this)"
-                class="copy-btn text-xs text-zinc-500 hover:text-zinc-300 transition-colors flex items-center gap-1">
-                <i class="ri-file-copy-line"></i> Copiar
-              </button>
-            </div>
-            <div class="p-5 font-mono text-sm leading-relaxed overflow-x-auto">
-              <code>
-                <div><span class="text-yellow-300">curl</span> <span class="text-emerald-400">'https://api.buscalead.com/v1/estados/SP?search=campinas'</span> \</div>
-                <div class="pl-4"><span class="text-blue-400">-H</span> <span class="text-emerald-400">'Authorization: Bearer sua_api_key_aqui'</span></div>
-                <div class="mt-4 text-zinc-500">// Resposta</div>
-                <div class="text-zinc-500">{</div>
-                <div class="pl-4"><span class="text-blue-300">"results"</span><span class="text-zinc-500">: [</span></div>
-                <div class="pl-6"><span class="text-zinc-500">{ </span><span class="text-blue-300">"id"</span><span class="text-zinc-500">: </span><span class="text-emerald-400">"3509502"</span><span class="text-zinc-500">, </span><span class="text-blue-300">"nome"</span><span class="text-zinc-500">: </span><span class="text-emerald-400">"Campinas"</span><span class="text-zinc-500">, </span><span class="text-blue-300">"codigo_uf"</span><span class="text-zinc-500">: </span><span class="text-yellow-300">35</span><span class="text-zinc-500"> }</span></div>
-                <div class="pl-4"><span class="text-zinc-500">],</span></div>
-                <div class="pl-4"><span class="text-blue-300">"total"</span><span class="text-zinc-500">:</span> <span class="text-yellow-300">1</span></div>
-                <div class="text-zinc-500">}</div>
-              </code>
-            </div>
-          </div>
-        </section>
-
-        <!-- Natureza Jurídica -->
-        <section id="natureza-juridica" class="mb-20">
-          <div class="flex items-center gap-3 mb-4">
-            <span
-              class="text-xs font-bold font-mono px-2.5 py-1 rounded-md bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">GET</span>
-            <h2 class="text-2xl font-bold text-white">Natureza Jurídica</h2>
-          </div>
-          <p class="text-zinc-400 mb-2">Consulte os tipos de natureza jurídica para usar como filtro.</p>
-          <code
-            class="text-sm font-mono text-emerald-400 bg-zinc-900 px-3 py-1.5 rounded-lg border border-zinc-800 inline-block mb-6">/natureza_juridica</code>
-
-          <p class="text-zinc-500 text-sm">Mesmos parâmetros de paginação: <code class="text-zinc-400">search</code>,
-            <code class="text-zinc-400">offset</code>, <code class="text-zinc-400">limit</code>.
-          </p>
-        </section>
-
-        <!-- Divider -->
-        <div class="border-t border-zinc-800/50 my-16"></div>
-        <h2 class="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-10">Webhooks de entrada</h2>
-
-        <!-- Webhooks de entrada -->
-        <section id="webhooks-visao-geral" class="mb-20">
-          <div class="flex items-center gap-3 mb-4">
-            <span
-              class="text-xs font-bold font-mono px-2.5 py-1 rounded-md bg-blue-500/10 text-blue-400 border border-blue-500/20">POST</span>
-            <h2 class="text-2xl font-bold text-white">Receber leads por webhook</h2>
-          </div>
-          <p class="text-zinc-400 mb-2">Receba leads de outros sistemas (ERP, site, formulário, CRM) automaticamente.
-            Cada webhook tem uma URL própria e um secret: a cada evento autenticado que o seu sistema envia, o BuscaLead
-            cria ou atualiza o lead na sua organização e garante o card no funil.</p>
-          <code
-            class="text-sm font-mono text-emerald-400 bg-zinc-900 px-3 py-1.5 rounded-lg border border-zinc-800 inline-block mb-6">/webhook-integrations/{id}/events</code>
-
-          <div class="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/20 mb-6">
-            <div class="flex items-start gap-3">
-              <i class="ri-information-line text-emerald-500 mt-0.5"></i>
-              <div>
-                <p class="text-sm text-zinc-300 font-medium mb-1">URL do webhook</p>
-                <code
-                  class="text-emerald-400 text-sm font-mono break-all">https://api.buscalead.com/v1/webhook-integrations/{id}/events</code>
-                <p class="text-sm text-zinc-500 mt-2">O <code class="text-zinc-400">{id}</code> é gerado ao criar o
-                  webhook. Copie a URL pronta em <strong class="text-zinc-300">Configurações → Integrações → Webhooks
-                    personalizados</strong>.</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="mb-6 p-4 rounded-xl bg-yellow-500/5 border border-yellow-500/20">
-            <div class="flex items-start gap-3">
-              <i class="ri-error-warning-line text-yellow-500 mt-0.5"></i>
-              <p class="text-sm text-zinc-400"><strong class="text-yellow-400">Planos pagos:</strong> webhooks
-                personalizados estão disponíveis nos planos Starter, Plus, Business e Pro. <strong
-                  class="text-yellow-400">Sem API Key:</strong> esta rota não usa o header <code
-                  class="text-yellow-400 bg-zinc-900 px-1.5 py-0.5 rounded text-xs">Authorization</code>; quem
-                autentica a requisição é o secret do webhook, enviado no header <code
-                  class="text-yellow-400 bg-zinc-900 px-1.5 py-0.5 rounded text-xs">X-Webhook-Secret</code> (próxima
-                seção). A assinatura do corpo é uma alternativa opcional.</p>
-            </div>
-          </div>
-
-          <h3 class="text-sm font-bold text-white mb-3 mt-8">Como configurar</h3>
-          <ol class="list-decimal pl-5 space-y-2 text-sm text-zinc-400 marker:text-zinc-600 mb-6">
-            <li>No BuscaLead, abra <strong class="text-zinc-300">Configurações → Integrações</strong> e, em <strong
-                class="text-zinc-300">Webhooks personalizados</strong>, clique em <strong class="text-zinc-300">Novo
-                webhook</strong>. Apenas proprietário, administrador e gerente da organização criam e gerenciam webhooks.
-            </li>
-            <li>Dê um nome ao webhook, por exemplo o nome do sistema que vai enviar os leads. Ele aparece na origem de
-              cada lead recebido: <code class="text-emerald-400 bg-zinc-900 px-1.5 py-0.5 rounded text-xs">Webhook:
-                &lt;nome&gt;</code>.</li>
-            <li>Copie a <strong class="text-zinc-300">URL</strong> e o <strong class="text-zinc-300">secret</strong>. O
-              secret é exibido <strong class="text-zinc-300">uma única vez</strong>, com 43 caracteres (letras, números,
-              <code class="text-zinc-400">-</code> e <code class="text-zinc-400">_</code>). Se perder, use <strong
-                class="text-zinc-300">Regenerar secret</strong>: o secret anterior deixa de valer imediatamente.</li>
-            <li>No seu sistema, envie um <code class="text-zinc-400">POST</code> JSON a cada novo cadastro, com os
-              headers <code class="text-zinc-400">Content-Type: application/json</code> e <code
-                class="text-zinc-400">X-Webhook-Secret: &lt;secret&gt;</code> (o secret exatamente como aparece no
-              painel), como mostra a seção <a href="#webhooks-secret-header"
-                class="text-emerald-500 hover:underline">Secret no header</a>. Quer assinar o corpo em vez de enviar o
-              secret? A <a href="#webhooks-assinatura" class="text-emerald-500 hover:underline">assinatura opcional
-                (mais segura)</a> também funciona.</li>
-          </ol>
-
-          <h3 class="text-sm font-bold text-white mb-3 mt-8">O que acontece a cada evento</h3>
-          <ul class="list-disc pl-5 space-y-2 text-sm text-zinc-400 marker:text-zinc-600 mb-6">
-            <li>O lead é criado na sua base, ou atualizado se já existir (veja <a href="#webhooks-deduplicacao"
-                class="text-emerald-500 hover:underline">Deduplicação</a>).</li>
-            <li>O card do lead entra na primeira etapa do pipeline padrão da organização.</li>
-            <li>O webhook registra a <strong class="text-zinc-300">última recepção</strong>, exibida no painel.</li>
-          </ul>
-
-          <div class="p-4 rounded-xl bg-yellow-500/5 border border-yellow-500/20">
-            <div class="flex items-start gap-3">
-              <i class="ri-shield-keyhole-line text-yellow-500 mt-0.5"></i>
-              <p class="text-sm text-zinc-400"><strong class="text-yellow-400">Envie sempre do seu servidor.</strong>
-                O secret nunca deve aparecer no navegador, em apps ou em repositórios. Teste com dados fictícios: cada
-                evento aceito cria um lead de verdade na sua base.</p>
-            </div>
-          </div>
-        </section>
-
-        <section id="webhooks-secret-header" class="mb-20">
-          <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-3">
-            <i class="ri-key-2-line text-emerald-500"></i> Enviar com o secret no header
-          </h2>
-          <p class="text-zinc-400 mb-6">
-            Envie um <code class="text-zinc-300">POST</code> JSON para a URL do webhook com o secret no header
-            <code class="text-zinc-300">X-Webhook-Secret</code> e o BuscaLead processa o evento. É o jeito mais direto e
-            funciona com qualquer sistema que faça um POST com headers: o seu servidor, um curl ou ferramentas como
-            Zapier, Make e n8n. Toda requisição leva dois headers:
-          </p>
-
-          <div class="overflow-hidden rounded-xl border border-zinc-800 mb-6">
-            <table class="w-full text-sm">
-              <thead>
-                <tr class="bg-zinc-900/50 border-b border-zinc-800">
-                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Header</th>
-                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Valor</th>
-                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Obrigatório</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-zinc-800/50">
-                <tr>
-                  <td class="py-3 px-4"><code class="text-emerald-400">Content-Type</code></td>
-                  <td class="py-3 px-4"><code class="text-zinc-300">application/json</code> <span
-                      class="text-zinc-600">(pode incluir <code class="text-zinc-500">; charset=utf-8</code>)</span></td>
-                  <td class="py-3 px-4 text-zinc-400">Sim</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4"><code class="text-emerald-400">X-Webhook-Secret</code></td>
-                  <td class="py-3 px-4"><code class="text-zinc-300">&lt;o secret, exatamente como aparece&gt;</code></td>
-                  <td class="py-3 px-4 text-zinc-400">Sim</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <h3 class="text-sm font-bold text-white mb-3 mt-8">Passo a passo</h3>
-          <ol class="list-decimal pl-5 space-y-2 text-sm text-zinc-400 marker:text-zinc-600 mb-6">
-            <li>Faça um <code class="text-zinc-400">POST</code> para a URL do webhook. Em ferramentas como Zapier, Make
-              e n8n, use a ação de requisição HTTP.</li>
-            <li>Adicione o header <code class="text-zinc-400">X-Webhook-Secret</code> com o secret copiado do painel
-              (copie e cole, exatamente como aparece).</li>
-            <li>Envie o corpo como <strong class="text-zinc-300">JSON</strong> (<code
-                class="text-zinc-400">Content-Type: application/json</code>), no formato da seção <a
-                href="#webhooks-payload" class="text-emerald-500 hover:underline">Payload</a>. Corpo em formato de
-              formulário ou texto simples é recusado com <code
-                class="text-yellow-400 bg-zinc-900 px-1.5 py-0.5 rounded text-xs">422</code>.</li>
-          </ol>
-
-          <div class="mb-6 p-4 rounded-xl bg-yellow-500/5 border border-yellow-500/20">
-            <div class="flex items-start gap-3">
-              <i class="ri-shield-keyhole-line text-yellow-500 mt-0.5"></i>
-              <p class="text-sm text-zinc-400"><strong class="text-yellow-400">Cuide do secret.</strong> Ele viaja no
-                header de cada requisição, sempre por HTTPS, mas a ferramenta que envia e os proxies no caminho podem
-                registrar os headers em logs. Se suspeitar que o secret foi exposto, use <strong
-                  class="text-zinc-300">Regenerar secret</strong>: o anterior deixa de valer imediatamente. Quer que o
-                secret nunca viaje? Veja <a href="#webhooks-assinatura"
-                  class="text-emerald-500 hover:underline">Opcional: assinatura (mais segura)</a>.</p>
-            </div>
-          </div>
-
-          <!-- Exemplo curl -->
-          <div class="code-window rounded-2xl bg-zinc-900 border border-zinc-800 overflow-hidden shadow-2xl">
-            <div class="flex items-center justify-between px-4 py-3 bg-zinc-900/80 border-b border-zinc-800">
-              <div class="flex items-center gap-3">
-                <div class="flex gap-1.5">
-                  <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
-                  <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
-                  <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
-                </div>
-                <span class="text-xs text-zinc-500 font-mono">Exemplo em bash (curl)</span>
-              </div>
-              <button onclick="copyCode(this)"
-                class="copy-btn text-xs text-zinc-500 hover:text-zinc-300 transition-colors flex items-center gap-1">
-                <i class="ri-file-copy-line"></i> Copiar
-              </button>
-            </div>
-            <div class="p-5 font-mono text-sm leading-relaxed overflow-x-auto">
-              <code class="block whitespace-pre">URL=<span class="text-emerald-400">'https://api.buscalead.com/v1/webhook-integrations/SEU_ID/events'</span>
-SECRET=<span class="text-emerald-400">'SEU_SECRET'</span>
-
-<span class="text-yellow-300">curl</span> <span class="text-blue-400">-i -X POST</span> <span class="text-emerald-400">"$URL"</span> \
-  <span class="text-blue-400">-H</span> <span class="text-emerald-400">'Content-Type: application/json'</span> \
-  <span class="text-blue-400">-H</span> <span class="text-emerald-400">"X-Webhook-Secret: $SECRET"</span> \
-  <span class="text-blue-400">--data-binary</span> <span class="text-emerald-400">'{"company":{"cnpj":"12345678000190","razao_social":"Empresa Exemplo"},"contact":{"name":"Maria","email":"maria@exemplo.com","phone":"11987654321"},"extra":{"origem":"site"}}'</span></code>
-            </div>
-          </div>
-        </section>
-
-        <section id="webhooks-assinatura" class="mb-20">
-          <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-3">
-            <i class="ri-shield-check-line text-emerald-500"></i> Opcional: assinatura (mais segura)
-          </h2>
-          <p class="text-zinc-400 mb-6">
-            Se o seu sistema puder, em vez de enviar o secret você pode assinar cada requisição: o secret fica guardado
-            com você e só a assinatura viaja. A assinatura também prova que o corpo veio de quem conhece o secret e que
-            não foi alterado no caminho. Neste modo, toda requisição leva dois headers (no lugar do <code
-              class="text-zinc-300">X-Webhook-Secret</code>):
-          </p>
-
-          <div class="overflow-hidden rounded-xl border border-zinc-800 mb-6">
-            <table class="w-full text-sm">
-              <thead>
-                <tr class="bg-zinc-900/50 border-b border-zinc-800">
-                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Header</th>
-                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Valor</th>
-                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Obrigatório</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-zinc-800/50">
-                <tr>
-                  <td class="py-3 px-4"><code class="text-emerald-400">Content-Type</code></td>
-                  <td class="py-3 px-4"><code class="text-zinc-300">application/json</code> <span
-                      class="text-zinc-600">(pode incluir <code class="text-zinc-500">; charset=utf-8</code>)</span></td>
-                  <td class="py-3 px-4 text-zinc-400">Sim</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4"><code class="text-emerald-400">X-Webhook-Signature</code></td>
-                  <td class="py-3 px-4"><code class="text-zinc-300">sha256=&lt;assinatura em hexadecimal&gt;</code></td>
-                  <td class="py-3 px-4 text-zinc-400">Sim</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div class="mb-6 p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/20">
-            <div class="flex items-start gap-3">
-              <i class="ri-information-line text-emerald-500 mt-0.5"></i>
-              <div class="text-sm text-zinc-400">
-                <p class="text-zinc-300 font-medium mb-1">Qual header vale</p>
-                <p>Se a requisição trouxer <code class="text-zinc-300">X-Webhook-Signature</code> (com qualquer valor),
-                  <strong class="text-zinc-300">só a assinatura</strong> é conferida: um <code
-                    class="text-zinc-300">X-Webhook-Secret</code> correto não corrige uma assinatura errada. Sem <code
-                    class="text-zinc-300">X-Webhook-Signature</code>, vale o <code
-                    class="text-zinc-300">X-Webhook-Secret</code>. Sem nenhum dos dois, a resposta é <code
-                    class="text-yellow-400 bg-zinc-900 px-1.5 py-0.5 rounded text-xs">401</code>.</p>
-              </div>
-            </div>
-          </div>
-
-          <h3 class="text-sm font-bold text-white mb-3 mt-8">Como calcular</h3>
-          <ol class="list-decimal pl-5 space-y-2 text-sm text-zinc-400 marker:text-zinc-600 mb-6">
-            <li>Monte o corpo JSON como texto (string) <strong class="text-zinc-300">uma única vez</strong>.</li>
-            <li>Calcule o <strong class="text-zinc-300">HMAC-SHA256</strong> desse corpo, usando o secret como chave, e
-              converta o resultado para hexadecimal (64 caracteres, em maiúsculas ou minúsculas).</li>
-            <li>Envie o resultado no header <code class="text-zinc-400">X-Webhook-Signature</code>, com o prefixo <code
-                class="text-zinc-400">sha256=</code> em minúsculas.</li>
-            <li>Envie no corpo exatamente o mesmo texto que foi assinado.</li>
-          </ol>
-
-          <div class="mb-6 p-4 rounded-xl bg-yellow-500/5 border border-yellow-500/20">
-            <div class="flex items-start gap-3">
-              <i class="ri-error-warning-line text-yellow-500 mt-0.5"></i>
-              <div class="text-sm text-zinc-400">
-                <p class="mb-2"><strong class="text-yellow-400">Dois detalhes que mais causam 401:</strong></p>
-                <ul class="list-disc pl-5 space-y-1.5 marker:text-zinc-600">
-                  <li><strong class="text-zinc-300">Use o secret exatamente como aparece (copie e cole).</strong> Ele é
-                    a chave do HMAC, sem nenhuma conversão.</li>
-                  <li><strong class="text-zinc-300">Assine os bytes exatos que você envia.</strong> Se o seu cliente HTTP
-                    reserializar o JSON depois de assinado (espaços, ordem das chaves, escape de acentos), a assinatura
-                    deixa de bater. Gere o texto, assine e envie esse mesmo texto.</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          <!-- Exemplo Node.js -->
-          <div class="code-window rounded-2xl bg-zinc-900 border border-zinc-800 overflow-hidden shadow-2xl mb-4">
-            <div class="flex items-center justify-between px-4 py-3 bg-zinc-900/80 border-b border-zinc-800">
-              <div class="flex items-center gap-3">
-                <div class="flex gap-1.5">
-                  <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
-                  <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
-                  <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
-                </div>
-                <span class="text-xs text-zinc-500 font-mono">Exemplo em Node.js 18+ (enviar-lead.mjs)</span>
-              </div>
-              <button onclick="copyCode(this)"
-                class="copy-btn text-xs text-zinc-500 hover:text-zinc-300 transition-colors flex items-center gap-1">
-                <i class="ri-file-copy-line"></i> Copiar
-              </button>
-            </div>
-            <div class="p-5 font-mono text-sm leading-relaxed overflow-x-auto">
-              <code class="block whitespace-pre"><span class="text-blue-400">import</span> { createHmac } <span class="text-blue-400">from</span> <span class="text-emerald-400">'node:crypto'</span>;
-
-<span class="text-blue-400">const</span> URL_DO_WEBHOOK = <span class="text-emerald-400">'https://api.buscalead.com/v1/webhook-integrations/SEU_ID/events'</span>;
-<span class="text-blue-400">const</span> SECRET = process.env.BUSCALEAD_WEBHOOK_SECRET; <span class="text-zinc-500">// texto do secret, exatamente como exibido</span>
-
-<span class="text-zinc-500">// Serialize UMA vez: assine e envie exatamente esta mesma string.</span>
-<span class="text-blue-400">const</span> body = JSON.stringify({
-  company: { cnpj: <span class="text-emerald-400">'12345678000190'</span>, razao_social: <span class="text-emerald-400">'Empresa Exemplo'</span> },
-  contact: { name: <span class="text-emerald-400">'Maria'</span>, email: <span class="text-emerald-400">'maria@exemplo.com'</span>, phone: <span class="text-emerald-400">'11987654321'</span> },
-  extra: { origem: <span class="text-emerald-400">'site'</span> },
-});
-
-<span class="text-blue-400">const</span> assinatura = createHmac(<span class="text-emerald-400">'sha256'</span>, SECRET).update(body).digest(<span class="text-emerald-400">'hex'</span>);
-
-<span class="text-blue-400">const</span> resposta = <span class="text-blue-400">await</span> fetch(URL_DO_WEBHOOK, {
-  method: <span class="text-emerald-400">'POST'</span>,
-  headers: {
-    <span class="text-emerald-400">'Content-Type'</span>: <span class="text-emerald-400">'application/json'</span>,
-    <span class="text-emerald-400">'X-Webhook-Signature'</span>: <span class="text-emerald-400">`sha256=${assinatura}`</span>,
-  },
-  body,
-});
-
-console.log(resposta.status, <span class="text-blue-400">await</span> resposta.text());</code>
-            </div>
-          </div>
-
-          <!-- Exemplo bash -->
-          <div class="code-window rounded-2xl bg-zinc-900 border border-zinc-800 overflow-hidden shadow-2xl">
-            <div class="flex items-center justify-between px-4 py-3 bg-zinc-900/80 border-b border-zinc-800">
-              <div class="flex items-center gap-3">
-                <div class="flex gap-1.5">
-                  <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
-                  <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
-                  <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
-                </div>
-                <span class="text-xs text-zinc-500 font-mono">Exemplo em bash (openssl + curl)</span>
-              </div>
-              <button onclick="copyCode(this)"
-                class="copy-btn text-xs text-zinc-500 hover:text-zinc-300 transition-colors flex items-center gap-1">
-                <i class="ri-file-copy-line"></i> Copiar
-              </button>
-            </div>
-            <div class="p-5 font-mono text-sm leading-relaxed overflow-x-auto">
-              <code class="block whitespace-pre">URL=<span class="text-emerald-400">'https://api.buscalead.com/v1/webhook-integrations/SEU_ID/events'</span>
-SECRET=<span class="text-emerald-400">'SEU_SECRET'</span>
-
-BODY=<span class="text-emerald-400">'{"company":{"cnpj":"12345678000190","razao_social":"Empresa Exemplo"},"contact":{"name":"Maria","email":"maria@exemplo.com","phone":"11987654321"},"extra":{"origem":"site"}}'</span>
-
-SIGNATURE=$(<span class="text-yellow-300">printf</span> <span class="text-emerald-400">'%s'</span> <span class="text-emerald-400">"$BODY"</span> | <span class="text-yellow-300">openssl</span> dgst <span class="text-blue-400">-sha256 -hmac</span> <span class="text-emerald-400">"$SECRET"</span> | <span class="text-yellow-300">awk</span> <span class="text-emerald-400">'{print $NF}'</span>)
-
-<span class="text-yellow-300">curl</span> <span class="text-blue-400">-i -X POST</span> <span class="text-emerald-400">"$URL"</span> \
-  <span class="text-blue-400">-H</span> <span class="text-emerald-400">'Content-Type: application/json'</span> \
-  <span class="text-blue-400">-H</span> <span class="text-emerald-400">"X-Webhook-Signature: sha256=$SIGNATURE"</span> \
-  <span class="text-blue-400">--data-binary</span> <span class="text-emerald-400">"$BODY"</span></code>
-            </div>
-          </div>
-        </section>
-
-        <section id="webhooks-payload" class="mb-20">
-          <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-3">
-            <i class="ri-braces-line text-emerald-500"></i> Payload
-          </h2>
-          <p class="text-zinc-400 mb-6">
-            O corpo é um JSON com três blocos opcionais: <code class="text-zinc-300">company</code>, <code
-              class="text-zinc-300">contact</code> e <code class="text-zinc-300">extra</code>. É obrigatório informar
-            ao menos um identificador (CNPJ, e-mail ou telefone).
-          </p>
-
-          <div class="overflow-hidden rounded-xl border border-zinc-800 mb-6">
-            <table class="w-full text-sm">
-              <thead>
-                <tr class="bg-zinc-900/50 border-b border-zinc-800">
-                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Campo</th>
-                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Tipo</th>
-                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Regras</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-zinc-800/50">
-                <tr>
-                  <td class="py-3 px-4"><code class="text-emerald-400">company.cnpj</code></td>
-                  <td class="py-3 px-4 text-zinc-500">string</td>
-                  <td class="py-3 px-4 text-zinc-400">14 dígitos. Pontuação é aceita e removida (<code
-                      class="text-zinc-300">12.345.678/0001-90</code>)</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4"><code class="text-emerald-400">company.razao_social</code></td>
-                  <td class="py-3 px-4 text-zinc-500">string</td>
-                  <td class="py-3 px-4 text-zinc-400">1 a 255 caracteres</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4"><code class="text-emerald-400">company.nome_fantasia</code></td>
-                  <td class="py-3 px-4 text-zinc-500">string</td>
-                  <td class="py-3 px-4 text-zinc-400">1 a 255 caracteres</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4"><code class="text-emerald-400">contact.name</code></td>
-                  <td class="py-3 px-4 text-zinc-500">string</td>
-                  <td class="py-3 px-4 text-zinc-400">1 a 255 caracteres</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4"><code class="text-emerald-400">contact.email</code></td>
-                  <td class="py-3 px-4 text-zinc-500">string</td>
-                  <td class="py-3 px-4 text-zinc-400">E-mail válido, até 254 caracteres</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4"><code class="text-emerald-400">contact.phone</code></td>
-                  <td class="py-3 px-4 text-zinc-500">string</td>
-                  <td class="py-3 px-4 text-zinc-400">DDD + número, de 10 a 13 dígitos. Formatação é aceita. Recomendamos
-                    enviar com o código do país (<code class="text-zinc-300">5511987654321</code>)</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4"><code class="text-emerald-400">extra</code></td>
-                  <td class="py-3 px-4 text-zinc-500">object</td>
-                  <td class="py-3 px-4 text-zinc-400">Objeto livre (chaves e valores à sua escolha), até 10.000 bytes de
-                    JSON. Gravado quando o lead é criado</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div class="mb-6 p-4 rounded-xl bg-yellow-500/5 border border-yellow-500/20">
-            <div class="flex items-start gap-3">
-              <i class="ri-error-warning-line text-yellow-500 mt-0.5"></i>
-              <div class="text-sm text-zinc-400">
-                <p class="mb-2"><strong class="text-yellow-400">O contrato é estrito:</strong></p>
-                <ul class="list-disc pl-5 space-y-1.5 marker:text-zinc-600">
-                  <li><code class="text-zinc-300">company</code> aceita somente <code class="text-zinc-300">cnpj</code>,
-                    <code class="text-zinc-300">razao_social</code> e <code class="text-zinc-300">nome_fantasia</code>.
-                    <code class="text-zinc-300">contact</code> aceita somente <code class="text-zinc-300">name</code>,
-                    <code class="text-zinc-300">email</code> e <code class="text-zinc-300">phone</code>. A raiz aceita
-                    somente <code class="text-zinc-300">company</code>, <code class="text-zinc-300">contact</code> e
-                    <code class="text-zinc-300">extra</code>.</li>
-                  <li>Qualquer outra chave, em qualquer um desses níveis, é recusada com <code
-                      class="text-yellow-400 bg-zinc-900 px-1.5 py-0.5 rounded text-xs">422</code>. Dados adicionais
-                    vão em <code class="text-zinc-300">extra</code>.</li>
-                  <li>Informe ao menos um entre <code class="text-zinc-300">company.cnpj</code>, <code
-                      class="text-zinc-300">contact.email</code> e <code class="text-zinc-300">contact.phone</code>.</li>
-                  <li>Para não enviar um campo ou bloco, omita a chave: <code class="text-zinc-300">null</code> não é
-                    aceito. O <code class="text-zinc-300">extra</code> precisa ser um objeto (não lista nem texto).</li>
-                  <li>O corpo inteiro pode ter no máximo <strong class="text-zinc-300">256 KB</strong> (262.144 bytes).
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          <!-- Exemplo de corpo -->
-          <div class="code-window rounded-2xl bg-zinc-900 border border-zinc-800 overflow-hidden shadow-2xl mb-4">
-            <div class="flex items-center justify-between px-4 py-3 bg-zinc-900/80 border-b border-zinc-800">
-              <div class="flex items-center gap-3">
-                <div class="flex gap-1.5">
-                  <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
-                  <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
-                  <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
-                </div>
-                <span class="text-xs text-zinc-500 font-mono">Exemplo de corpo</span>
-              </div>
-              <button onclick="copyCode(this)"
-                class="copy-btn text-xs text-zinc-500 hover:text-zinc-300 transition-colors flex items-center gap-1">
-                <i class="ri-file-copy-line"></i> Copiar
-              </button>
-            </div>
-            <div class="p-5 font-mono text-sm leading-relaxed overflow-x-auto">
-              <code class="block whitespace-pre"><span class="text-zinc-500">{</span>
-  <span class="text-blue-300">"company"</span><span class="text-zinc-500">: {</span>
-    <span class="text-blue-300">"cnpj"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"12345678000190"</span><span class="text-zinc-500">,</span>
-    <span class="text-blue-300">"razao_social"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"Empresa Exemplo"</span><span class="text-zinc-500">,</span>
-    <span class="text-blue-300">"nome_fantasia"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"Exemplo"</span>
-  <span class="text-zinc-500">},</span>
-  <span class="text-blue-300">"contact"</span><span class="text-zinc-500">: {</span>
-    <span class="text-blue-300">"name"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"Maria"</span><span class="text-zinc-500">,</span>
-    <span class="text-blue-300">"email"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"maria@exemplo.com"</span><span class="text-zinc-500">,</span>
-    <span class="text-blue-300">"phone"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"11987654321"</span>
-  <span class="text-zinc-500">},</span>
-  <span class="text-blue-300">"extra"</span><span class="text-zinc-500">: {</span>
-    <span class="text-blue-300">"origem"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"site"</span><span class="text-zinc-500">,</span>
-    <span class="text-blue-300">"plano"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"premium"</span>
-  <span class="text-zinc-500">}</span>
-<span class="text-zinc-500">}</span></code>
-            </div>
-          </div>
-
-          <!-- Exemplo de 422 -->
-          <div class="code-window rounded-2xl bg-zinc-900 border border-zinc-800 overflow-hidden shadow-2xl">
-            <div class="flex items-center justify-between px-4 py-3 bg-zinc-900/80 border-b border-zinc-800">
-              <div class="flex items-center gap-3">
-                <div class="flex gap-1.5">
-                  <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
-                  <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
-                  <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
-                </div>
-                <span class="text-xs text-zinc-500 font-mono">Resposta - 422 (chave não aceita em contact)</span>
-              </div>
-            </div>
-            <div class="p-5 font-mono text-sm leading-relaxed overflow-x-auto">
-              <code class="block whitespace-pre"><span class="text-zinc-500">{</span>
-  <span class="text-blue-300">"error"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"Payload inválido"</span><span class="text-zinc-500">,</span>
-  <span class="text-blue-300">"details"</span><span class="text-zinc-500">: [</span>
-    <span class="text-zinc-500">{</span>
-      <span class="text-blue-300">"code"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"unrecognized_keys"</span><span class="text-zinc-500">,</span>
-      <span class="text-blue-300">"keys"</span><span class="text-zinc-500">: [</span><span class="text-emerald-400">"cargo"</span><span class="text-zinc-500">],</span>
-      <span class="text-blue-300">"path"</span><span class="text-zinc-500">: [</span><span class="text-emerald-400">"contact"</span><span class="text-zinc-500">],</span>
-      <span class="text-blue-300">"message"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"Unrecognized key: \"cargo\""</span>
-    <span class="text-zinc-500">}</span>
-  <span class="text-zinc-500">]</span>
-<span class="text-zinc-500">}</span></code>
-            </div>
-          </div>
-          <p class="text-zinc-500 text-sm mt-3"><code class="text-zinc-400">details</code> lista cada problema: <code
-              class="text-zinc-400">path</code> aponta o campo e <code class="text-zinc-400">message</code> explica o
-            motivo.</p>
-        </section>
-
-        <section id="webhooks-deduplicacao" class="mb-20">
-          <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-3">
-            <i class="ri-links-line text-emerald-500"></i> Deduplicação e atualização
-          </h2>
-          <p class="text-zinc-400 mb-6">
-            Reenviar o mesmo cliente é seguro: o BuscaLead atualiza o lead existente em vez de duplicar e nunca cria um
-            segundo card para o mesmo lead.
-          </p>
-
-          <h3 class="text-sm font-bold text-white mb-3 mt-8">Como o lead é encontrado</h3>
-          <p class="text-zinc-400 text-sm mb-3">A busca acontece dentro da sua organização, nesta ordem:</p>
-          <ol class="list-decimal pl-5 space-y-2 text-sm text-zinc-400 marker:text-zinc-600 mb-6">
-            <li><strong class="text-zinc-300">CNPJ</strong> (<code class="text-zinc-300">company.cnpj</code>), se
-              enviado.</li>
-            <li><strong class="text-zinc-300">Telefone</strong> (<code class="text-zinc-300">contact.phone</code>), com
-              ou sem o nono dígito, no telefone 1 ou 2 do lead. Havendo mais de um lead, vale o mais antigo.</li>
-            <li><strong class="text-zinc-300">E-mail</strong> (<code class="text-zinc-300">contact.email</code>), por
-              igualdade exata (diferencia maiúsculas e minúsculas, então envie sempre em minúsculas). Havendo mais de um
-              lead, vale o mais antigo.</li>
-          </ol>
-          <p class="text-zinc-500 text-sm mb-6">Se o evento traz um CNPJ e o lead encontrado por telefone ou e-mail já
-            tem outro CNPJ, ele é tratado como outra empresa e a busca segue adiante. Lead encontrado sem CNPJ pode ser
-            enriquecido com o CNPJ do evento.</p>
-
-          <h3 class="text-sm font-bold text-white mb-3 mt-8">O que é gravado</h3>
-          <div class="overflow-hidden rounded-xl border border-zinc-800 mb-6">
-            <table class="w-full text-sm">
-              <thead>
-                <tr class="bg-zinc-900/50 border-b border-zinc-800">
-                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Situação</th>
-                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Resultado</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-zinc-800/50">
-                <tr>
-                  <td class="py-3 px-4 text-zinc-300">Lead não encontrado</td>
-                  <td class="py-3 px-4 text-zinc-400">Cria o lead com os campos enviados. A origem fica <code
-                      class="text-zinc-300">Webhook: &lt;nome do webhook&gt;</code> e o <code
-                      class="text-zinc-300">extra</code> é guardado na atribuição do lead.</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4 text-zinc-300">Lead encontrado</td>
-                  <td class="py-3 px-4 text-zinc-400">Atualiza apenas os campos enviados (CNPJ, razão social, nome
-                    fantasia, nome do contato e e-mail). O que você não enviou permanece como está. Origem e
-                    <code class="text-zinc-300">extra</code> não são regravados.</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4 text-zinc-300">Telefone enviado</td>
-                  <td class="py-3 px-4 text-zinc-400">Salvo normalizado, com código do país (55) e nono dígito nos
-                    celulares. Se o número já está no lead, nada muda. Se é um número novo, passa a ser o telefone
-                    principal do lead.</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4 text-zinc-300">Card no funil</td>
-                  <td class="py-3 px-4 text-zinc-400">Um card por lead, na primeira etapa do pipeline padrão. Se o card
-                    já existe, ele é reaproveitado. Se a organização não tem pipeline padrão, o lead é gravado e <code
-                      class="text-zinc-300">card_id</code> volta <code class="text-zinc-300">null</code>.</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <section id="webhooks-respostas" class="mb-20">
-          <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-3">
-            <i class="ri-reply-line text-emerald-500"></i> Respostas, limites e retentativas
-          </h2>
-
-          <!-- Exemplo de sucesso -->
-          <div class="code-window rounded-2xl bg-zinc-900 border border-zinc-800 overflow-hidden shadow-2xl mb-6">
-            <div class="flex items-center justify-between px-4 py-3 bg-zinc-900/80 border-b border-zinc-800">
-              <div class="flex items-center gap-3">
-                <div class="flex gap-1.5">
-                  <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
-                  <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
-                  <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
-                </div>
-                <span class="text-xs text-zinc-500 font-mono">Resposta - 200 OK</span>
-              </div>
-            </div>
-            <div class="p-5 font-mono text-sm leading-relaxed overflow-x-auto">
-              <code>
-                <div class="text-zinc-500">{</div>
-                <div class="pl-4"><span class="text-blue-300">"success"</span><span class="text-zinc-500">:</span> <span class="text-yellow-300">true</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-4"><span class="text-blue-300">"lead_id"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"b3f5c1d2-0a4e-4c8b-9f6d-2e7a1c5d8b90"</span><span class="text-zinc-500">,</span></div>
-                <div class="pl-4"><span class="text-blue-300">"card_id"</span><span class="text-zinc-500">:</span> <span class="text-emerald-400">"7d2e9a40-51cb-4f3a-8e16-c04b9d7a3f25"</span></div>
-                <div class="text-zinc-500">}</div>
-              </code>
-            </div>
-          </div>
-
-          <p class="text-zinc-400 text-sm mb-4">Neste endpoint, o corpo dos erros pode ser <code
-              class="text-zinc-300">{"error": "..."}</code> ou o formato geral da seção <a href="#erros"
-              class="text-emerald-500 hover:underline">Erros</a>. Decida sempre pelo código HTTP.</p>
-
-          <div class="overflow-hidden rounded-xl border border-zinc-800 mb-6">
-            <table class="w-full text-sm">
-              <thead>
-                <tr class="bg-zinc-900/50 border-b border-zinc-800">
-                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Código</th>
-                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Quando</th>
-                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">O que fazer</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-zinc-800/50">
-                <tr>
-                  <td class="py-3 px-4"><code class="text-emerald-400">200</code></td>
-                  <td class="py-3 px-4 text-zinc-400">Evento processado: lead criado ou atualizado. <code
-                      class="text-zinc-300">card_id</code> é <code class="text-zinc-300">null</code> se a organização
-                    não tem pipeline padrão.</td>
-                  <td class="py-3 px-4 text-zinc-500">Nada. Marque o evento como entregue.</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4"><code class="text-yellow-400">400</code></td>
-                  <td class="py-3 px-4 text-zinc-400">O corpo não é um JSON válido.</td>
-                  <td class="py-3 px-4 text-zinc-500">Corrija o JSON. Reenviar igual repete o erro.</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4"><code class="text-yellow-400">401</code></td>
-                  <td class="py-3 px-4 text-zinc-400">URL inexistente (ou com um <code class="text-zinc-300">id</code>
-                    que não é UUID), webhook desativado, nenhuma credencial (nem <code
-                      class="text-zinc-300">X-Webhook-Secret</code> nem <code
-                      class="text-zinc-300">X-Webhook-Signature</code>), secret ou assinatura inválidos, ou, ao assinar,
-                    <code class="text-zinc-300">Content-Type</code> de texto/formulário (o corpo não pode ser
-                    assinado). Todas as causas respondem igual (<code
-                      class="text-zinc-300">{"error":"Unauthorized"}</code>).
-                  </td>
-                  <td class="py-3 px-4 text-zinc-500">Confira a URL, se o webhook está ativo e o header <code
-                      class="text-zinc-400">X-Webhook-Secret</code> (o secret exatamente como aparece no painel). Se você
-                    assina o corpo, confira a assinatura sobre o corpo exato. Eventos enviados com o webhook desativado
-                    não são reprocessados.</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4"><code class="text-yellow-400">413</code></td>
-                  <td class="py-3 px-4 text-zinc-400">Corpo acima de 256 KB (262.144 bytes), qualquer que seja o <code
-                      class="text-zinc-300">Content-Type</code>.</td>
-                  <td class="py-3 px-4 text-zinc-500">Reduza o corpo, principalmente o <code
-                      class="text-zinc-400">extra</code>.</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4"><code class="text-yellow-400">415</code></td>
-                  <td class="py-3 px-4 text-zinc-400"><code class="text-zinc-300">Content-Type</code> sem suporte (por
-                    exemplo <code class="text-zinc-300">application/xml</code>) ou corpo enviado sem <code
-                      class="text-zinc-300">Content-Type</code>.</td>
-                  <td class="py-3 px-4 text-zinc-500">Envie <code class="text-zinc-400">Content-Type:
-                      application/json</code>.</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4"><code class="text-yellow-400">422</code></td>
-                  <td class="py-3 px-4 text-zinc-400">Autenticação válida, mas o conteúdo está fora do contrato (por
-                    exemplo: chave não aceita, nenhum identificador, CNPJ sem 14 dígitos, telefone fora de 10 a 13
-                    dígitos, e-mail inválido, texto acima do limite, caractere nulo (<code
-                      class="text-zinc-300">\u0000</code>) ou Unicode inválido (surrogate solitário, como <code
-                      class="text-zinc-300">\ud83d</code> sem o <code class="text-zinc-300">\ude00</code>) em qualquer
-                    texto ou chave, <code class="text-zinc-300">extra</code> acima de 10.000 bytes, ou, ao enviar o
-                    secret no header, corpo que não é JSON, como formulário ou texto). Veja <code
-                      class="text-zinc-300">details</code>.</td>
-                  <td class="py-3 px-4 text-zinc-500">Corrija conforme <code class="text-zinc-400">details</code>.</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4"><code class="text-yellow-400">429</code></td>
-                  <td class="py-3 px-4 text-zinc-400">Limite excedido: mais de 140 requisições por minuto neste webhook
-                    ou mais de 600 por minuto vindas do mesmo IP.</td>
-                  <td class="py-3 px-4 text-zinc-500">Aguarde e reenvie com espaçamento crescente. Respeite o header
-                    <code class="text-zinc-400">Retry-After</code> quando houver. Insistir acima do limite por IP pode
-                    bloquear o IP por 10 minutos.</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4"><code class="text-red-400">5xx</code></td>
-                  <td class="py-3 px-4 text-zinc-400">Falha temporária do servidor.</td>
-                  <td class="py-3 px-4 text-zinc-500">Reenvie com espaçamento crescente.</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <h3 class="text-sm font-bold text-white mb-3 mt-8">Limites</h3>
-          <div class="overflow-hidden rounded-xl border border-zinc-800 mb-6">
-            <table class="w-full text-sm">
-              <thead>
-                <tr class="bg-zinc-900/50 border-b border-zinc-800">
-                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Limite</th>
-                  <th class="text-left py-3 px-4 text-zinc-400 font-semibold">Valor</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-zinc-800/50">
-                <tr>
-                  <td class="py-3 px-4 text-zinc-300">Requisições por webhook</td>
-                  <td class="py-3 px-4"><code class="text-yellow-400">140</code> <span class="text-zinc-500">por
-                      minuto</span></td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4 text-zinc-300">Requisições por IP <span class="text-zinc-600">(todos os webhooks
-                      somados)</span></td>
-                  <td class="py-3 px-4"><code class="text-yellow-400">600</code> <span class="text-zinc-500">por
-                      minuto</span></td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4 text-zinc-300">Tamanho do corpo</td>
-                  <td class="py-3 px-4"><code class="text-yellow-400">256 KB</code></td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4 text-zinc-300">Tamanho do <code class="text-zinc-400">extra</code></td>
-                  <td class="py-3 px-4"><code class="text-yellow-400">10.000 bytes</code></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div class="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/20">
-            <div class="flex items-start gap-3">
-              <i class="ri-refresh-line text-emerald-500 mt-0.5"></i>
-              <div class="text-sm text-zinc-400">
-                <p class="mb-2"><strong class="text-zinc-300">Retentativas</strong></p>
-                <ul class="list-disc pl-5 space-y-1.5 marker:text-zinc-600">
-                  <li>Reenvie apenas <code class="text-zinc-300">429</code> e <code class="text-zinc-300">5xx</code>,
-                    esperando um pouco mais a cada tentativa (por exemplo 1 s, 2 s, 4 s, 8 s...).</li>
-                  <li>Os demais códigos (<code class="text-zinc-300">400</code>, <code
-                      class="text-zinc-300">401</code>, <code class="text-zinc-300">413</code>, <code
-                      class="text-zinc-300">415</code> e <code class="text-zinc-300">422</code>) pedem correção antes de
-                    reenviar.</li>
-                  <li>Reenviar um evento é seguro: o lead é atualizado, nunca duplicado, e o card não é recriado.</li>
-                  <li>Toda requisição autenticada conta no limite por webhook, inclusive as recusadas com <code
-                      class="text-zinc-300">422</code>.</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- Footer -->
-        <div
-          class="border-t border-zinc-800/50 mt-20 pt-10 pb-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-zinc-600">
-          <p>&copy; 2025 BuscaLead. Todos os direitos reservados.</p>
-          <div class="flex gap-6">
-            <a href="https://buscalead.com" class="hover:text-white transition-colors">Plataforma</a>
-            <a href="https://wa.me/553499288" class="hover:text-white transition-colors">Suporte</a>
-          </div>
-        </div>
-
-      </div>
-    </main>
+  <div id="mnav" hidden>
+    <a href="#resposta">Resposta</a>
+    <a href="#cobranca">Cobrança</a>
+    <a href="#planos">Preços</a>
+    <a href="#faq">FAQ</a>
+    <a href="/docs.html">Documentação</a>
+    <a class="btn btn-primary btn-block" style="margin-top:1rem" href="https://wa.me/5534992885263" data-cta="register">Começar grátis</a>
   </div>
 
-  <script>
-    // Active sidebar link tracking
-    const sections = document.querySelectorAll('section[id]');
-    const sidebarLinks = document.querySelectorAll('.sidebar-link');
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          sidebarLinks.forEach(link => link.classList.remove('active'));
-          const activeLink = document.querySelector(`.sidebar-link[href="#${entry.target.id}"]`);
-          if (activeLink) activeLink.classList.add('active');
+  <main>
+    <!-- 1. Hero -->
+    <section id="hero" class="sec" style="overflow:hidden;padding-top:calc(var(--header-h) + 3rem)">
+      <div class="glow" style="top:-140px;right:-180px"></div>
+      <div class="wrap">
+        <div class="grid gap-10 lg:gap-12 lg:grid-cols-12 items-center">
+          <div class="lg:col-span-5 min-w-0">
+            <span class="pill rise"><i class="ri-database-2-line"></i> API de dados de empresas · v2</span>
+            <h1 class="h1 rise" style="--d:.05s;margin-top:1.25rem">A base de CNPJ com <span class="em">telefone e e-mail</span> numa chamada de API</h1>
+            <p class="lede rise" style="--d:.1s;margin-top:1.5rem">Busque empresas por CNAE, cidade, porte e mais. A resposta já traz sócios, endereço, e-mail e telefones classificados em celular ou fixo, pronta para prospecção, CRM e automação.</p>
+            <div class="rise flex flex-wrap gap-3" style="--d:.15s;margin-top:2rem">
+              <a class="btn btn-primary btn-lg" href="https://wa.me/5534992885263" data-cta="register">Começar grátis <i class="ri-arrow-right-line arrow"></i></a>
+              <a class="btn btn-secondary btn-lg" href="/docs.html"><i class="ri-book-open-line"></i> Ver documentação</a>
+            </div>
+            <ul class="rise flex flex-wrap gap-x-5 gap-y-2" style="--d:.2s;margin-top:1.5rem;font-size:.875rem;color:var(--zinc-500)">
+              <li class="flex items-center gap-1.5"><i class="ri-check-line" style="color:var(--emerald-500)"></i> 200 consultas grátis por 7 dias</li>
+              <li class="flex items-center gap-1.5"><i class="ri-check-line" style="color:var(--emerald-500)"></i> Chave de API no primeiro acesso</li>
+              <li class="flex items-center gap-1.5"><i class="ri-check-line" style="color:var(--emerald-500)"></i> Assinatura no cartão, cancele quando quiser</li>
+            </ul>
+          </div>
+          <div class="lg:col-span-7 min-w-0 rise" style="--d:.15s">
+            <div class="codewin">
+              <div class="cw-head">
+                <span class="cw-title">GET /v2/empresas</span>
+                <button type="button" class="cw-copy" data-copy="#hero-curl"><i class="ri-file-copy-line"></i> Copiar curl</button>
+              </div>
+              <div class="cw-body"><pre id="hero-curl" data-code data-lang="bash" data-bare>curl -G 'https://api.buscalead.com/v2/empresas' \
+  -d cnae=8630504 -d uf=SP -d com_celular=true -d limit=2 \
+  -H 'Authorization: Bearer bl_sua_chave'</pre></div>
+              <div class="cw-sep"><b>200 OK</b> resposta de exemplo · 2 empresas devolvidas = 2 créditos</div>
+              <div class="cw-body"><pre data-code data-lang="json" data-bare>{
+  "data": [
+    {
+      "cnpj": "11222333000181",
+      "razao_social": "ODONTO EXEMPLO LTDA",
+      "telefones": [
+        {
+          "tipo": "celular",   //@hl
+          "ddd": "11",
+          "numero": "987654321",
+          "completo": "5511987654321"
         }
-      });
-    }, { rootMargin: '-20% 0px -70% 0px' });
-
-    sections.forEach(section => observer.observe(section));
-
-    // Copy code functionality
-    function copyCode(btn) {
-      const codeBlock = btn.closest('.code-window').querySelector('code');
-      const text = codeBlock.innerText;
-      navigator.clipboard.writeText(text).then(() => {
-        const original = btn.innerHTML;
-        btn.innerHTML = '<i class="ri-check-line"></i> Copiado!';
-        btn.classList.add('text-emerald-500');
-        setTimeout(() => {
-          btn.innerHTML = original;
-          btn.classList.remove('text-emerald-500');
-        }, 2000);
-      });
+      ],
+      "email": "contato@odontoexemplo.com.br"
+      // ...demais campos e a 2ª empresa omitidos
     }
-  </script>
+  ],
+  "meta": {
+    "total": 1240,
+    "credits_charged": 2,   //@hl
+    "credits_remaining": 198
+  }
+}</pre></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. O que a API devolve -->
+    <section id="resposta" class="sec sec-alt">
+      <div class="wrap" data-explorer-root>
+        <div class="sec-head">
+          <span class="pill">O que a API devolve</span>
+          <h2 class="h2" style="margin-top:1rem">Cada empresa chega <span class="em">completa</span></h2>
+          <p class="lede">Cadastro, CNAEs, endereço, contato e sócios no mesmo objeto, num formato estável. Escolha um grupo e veja onde ele aparece na resposta.</p>
+        </div>
+        <div class="grid gap-8 lg:grid-cols-12 items-start">
+          <div class="lg:col-span-5 grid gap-3 min-w-0">
+            <button type="button" class="group-btn" data-group="contato" aria-pressed="true"><span class="icon-tile"><i class="ri-phone-line"></i></span><span><strong>Contato</strong><span class="d">Telefones com o tipo (celular ou fixo), DDD e número completo com 55, mais o e-mail.</span></span></button>
+            <button type="button" class="group-btn" data-group="cadastro" aria-pressed="false"><span class="icon-tile"><i class="ri-building-4-line"></i></span><span><strong>Cadastro</strong><span class="d">Razão social, nome fantasia, situação, porte, natureza jurídica, capital social, Simples e MEI.</span></span></button>
+            <button type="button" class="group-btn" data-group="cnae" aria-pressed="false"><span class="icon-tile"><i class="ri-price-tag-3-line"></i></span><span><strong>CNAEs</strong><span class="d">CNAE principal e secundários, cada um com a descrição.</span></span></button>
+            <button type="button" class="group-btn" data-group="endereco" aria-pressed="false"><span class="icon-tile"><i class="ri-map-pin-2-line"></i></span><span><strong>Endereço</strong><span class="d">Logradouro, número, bairro, CEP, município e UF.</span></span></button>
+            <button type="button" class="group-btn" data-group="socios" aria-pressed="false"><span class="icon-tile"><i class="ri-group-line"></i></span><span><strong>Sócios</strong><span class="d">Nome, qualificação, data de entrada e faixa etária.</span></span></button>
+          </div>
+          <div class="lg:col-span-7 min-w-0">
+            <pre data-code data-lang="json" data-title="GET /v2/empresas/11222333000181 · resposta de exemplo" data-explorer data-focus="contato">{
+  "data": {
+    "cnpj": "11222333000181",   //@cadastro
+    "razao_social": "ODONTO EXEMPLO LTDA",   //@cadastro
+    "nome_fantasia": "CLINICA EXEMPLO",   //@cadastro
+    "tipo": "matriz",   //@cadastro
+    "situacao": { "codigo": "02", "descricao": "Ativa", "data": "2019-03-15", "motivo": null },   //@cadastro
+    "data_abertura": "2019-03-15",   //@cadastro
+    "porte": { "codigo": "01", "descricao": "Microempresa" },   //@cadastro
+    "natureza_juridica": { "codigo": "2062", "descricao": "Sociedade Empresária Limitada" },   //@cadastro
+    "capital_social": 50000,   //@cadastro
+    "simples": true,   //@cadastro
+    "mei": false,   //@cadastro
+    "cnae_principal": { "codigo": "8630504", "descricao": "Atividade odontológica" },   //@cnae
+    "cnaes_secundarios": [   //@cnae
+      { "codigo": "4773300", "descricao": "Comércio varejista de artigos médicos e ortopédicos" }   //@cnae
+    ],   //@cnae
+    "endereco": {   //@endereco
+      "logradouro": "RUA EXEMPLO",   //@endereco
+      "numero": "100",   //@endereco
+      "complemento": "SALA 12",   //@endereco
+      "bairro": "CENTRO",   //@endereco
+      "cep": "01000000",   //@endereco
+      "municipio": { "codigo": "7107", "nome": "SAO PAULO" },   //@endereco
+      "uf": "SP"   //@endereco
+    },   //@endereco
+    "telefones": [   //@contato
+      {   //@contato
+        "tipo": "fixo",   //@contato
+        "ddd": "11",   //@contato
+        "numero": "30000000",   //@contato
+        "completo": "551130000000"   //@contato
+      },   //@contato
+      {   //@contato
+        "tipo": "celular",   //@contato
+        "ddd": "11",   //@contato
+        "numero": "987654321",   //@contato
+        "completo": "5511987654321"   //@contato
+      }   //@contato
+    ],   //@contato
+    "email": "contato@odontoexemplo.com.br",   //@contato
+    "socios": [   //@socios
+      {   //@socios
+        "nome": "MARIA EXEMPLO",   //@socios
+        "documento": "***123456**",   //@socios
+        "qualificacao": { "codigo": "49", "descricao": "Sócio-Administrador" },   //@socios
+        "data_entrada": "2019-03-15",   //@socios
+        "faixa_etaria": "4"   //@socios
+      }   //@socios
+    ]   //@socios
+  },
+  "meta": { "credits_charged": 1, "credits_remaining": 199 }
+}</pre>
+            <p style="margin-top:1rem;font-size:.875rem;color:var(--zinc-600);line-height:1.6">Nem toda empresa tem telefone ou e-mail cadastrado. Use <code class="ic">com_celular</code>, <code class="ic">com_fixo</code> e <code class="ic">com_email</code> para buscar só quem tem.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Casos de uso -->
+    <section id="casos" class="sec">
+      <div class="wrap">
+        <div class="sec-head">
+          <span class="pill">Casos de uso</span>
+          <h2 class="h2" style="margin-top:1rem">Do filtro à <span class="em">lista pronta</span></h2>
+          <p class="lede">Três jeitos de colocar a base para trabalhar, com a mesma chave de API.</p>
+        </div>
+        <div class="grid gap-5 md:grid-cols-3">
+          <article class="card flex flex-col min-w-0">
+            <span class="icon-tile"><i class="ri-focus-3-line"></i></span>
+            <h3 style="font-size:1.125rem;font-weight:700;margin:1.25rem 0 .5rem">Prospecção</h3>
+            <p style="font-size:.9375rem;color:var(--zinc-600);line-height:1.6;margin-bottom:1.25rem">Monte listas por CNAE, cidade e porte e receba só quem tem celular.</p>
+            <div class="codewin" style="margin-top:auto"><div class="cw-body"><pre data-code data-lang="text" data-bare>GET /v2/empresas
+  ?cnae=8630504
+  &amp;uf=MG
+  &amp;com_celular=true</pre></div></div>
+          </article>
+          <article class="card flex flex-col min-w-0">
+            <span class="icon-tile"><i class="ri-contacts-book-2-line"></i></span>
+            <h3 style="font-size:1.125rem;font-weight:700;margin:1.25rem 0 .5rem">Enriquecer o CRM</h3>
+            <p style="font-size:.9375rem;color:var(--zinc-600);line-height:1.6;margin-bottom:1.25rem">Complete o cadastro dos seus leads a partir do CNPJ: um por chamada ou até 100 no lote.</p>
+            <div class="codewin" style="margin-top:auto"><div class="cw-body"><pre data-code data-lang="text" data-bare>POST /v2/empresas/lote
+{ "cnpjs": ["11222333000181"] }</pre></div></div>
+          </article>
+          <article class="card flex flex-col min-w-0">
+            <span class="icon-tile"><i class="ri-flashlight-line"></i></span>
+            <h3 style="font-size:1.125rem;font-weight:700;margin:1.25rem 0 .5rem">n8n, Make e Zapier</h3>
+            <p style="font-size:.9375rem;color:var(--zinc-600);line-height:1.6;margin-bottom:1.25rem">Use o módulo HTTP com a URL da API e o header Authorization.</p>
+            <div class="codewin" style="margin-top:auto"><div class="cw-body"><pre data-code data-lang="text" data-bare>GET https://api.buscalead.com/v2/empresas/{cnpj}
+Authorization: Bearer bl_sua_chave</pre></div></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Como funciona a cobrança -->
+    <section id="cobranca" class="sec sec-alt">
+      <div class="wrap">
+        <div class="sec-head">
+          <span class="pill">Como funciona a cobrança</span>
+          <h2 class="h2" style="margin-top:1rem">Você paga pelo que <span class="em">recebe</span></h2>
+          <p class="lede">Cada empresa devolvida custa 1 crédito, na busca, na consulta por CNPJ e no lote. Busca sem resultado e chamadas com erro não cobram.</p>
+        </div>
+        <div class="grid gap-8 lg:grid-cols-12 items-start">
+          <div class="lg:col-span-7 min-w-0">
+            <div class="ledger" role="table" aria-label="Exemplos de cobrança por chamada">
+              <div class="ledger-head" role="row"><span class="label" role="columnheader">Chamada</span><span class="label" role="columnheader">Créditos</span></div>
+              <div class="ledger-row" role="row"><code>GET /v2/empresas?cnae=8630504&amp;uf=SP&amp;limit=25</code><span class="res">25 empresas devolvidas</span><span class="cr">−25</span></div>
+              <div class="ledger-row" role="row"><code>GET /v2/empresas?…</code><span class="res">busca sem resultado: nenhuma empresa devolvida</span><span class="cr zero">0</span></div>
+              <div class="ledger-row" role="row"><code>GET /v2/empresas/11222333000181</code><span class="res">1 empresa consultada</span><span class="cr">−1</span></div>
+              <div class="ledger-row" role="row"><code>GET /v2/empresas/00000000000000</code><span class="res">404 · CNPJ não encontrado</span><span class="cr zero">0</span></div>
+              <div class="ledger-row" role="row"><code>POST /v2/empresas/lote</code><span class="res">100 CNPJs enviados, 97 encontrados: cobra só os encontrados</span><span class="cr">−97</span></div>
+              <div class="ledger-row" role="row"><code>GET /v2/empresas?…</code><span class="res">402 · saldo zerado: responde com o link de compra</span><span class="cr zero">0</span></div>
+            </div>
+          </div>
+          <div class="lg:col-span-5 grid gap-4 min-w-0">
+            <div class="card" style="padding:1.25rem"><div class="flex gap-4"><span class="icon-tile" style="flex-shrink:0"><i class="ri-gift-line"></i></span><div><strong>Teste grátis</strong><p style="font-size:.875rem;color:var(--zinc-600);line-height:1.6;margin-top:.25rem">200 consultas por 7 dias, liberadas com o e-mail confirmado.</p></div></div></div>
+            <div class="card" style="padding:1.25rem"><div class="flex gap-4"><span class="icon-tile" style="flex-shrink:0"><i class="ri-stack-line"></i></span><div><strong>Os créditos do plano acumulam</strong><p style="font-size:.875rem;color:var(--zinc-600);line-height:1.6;margin-top:.25rem">Enquanto a assinatura estiver ativa, o que você não usa no mês passa para o próximo.</p></div></div></div>
+            <div class="card" style="padding:1.25rem"><div class="flex gap-4"><span class="icon-tile" style="flex-shrink:0"><i class="ri-add-circle-line"></i></span><div><strong>Avulso quando precisar</strong><p style="font-size:.875rem;color:var(--zinc-600);line-height:1.6;margin-top:.25rem">R$ 0,01 por empresa, sem assinatura. A ordem de uso é teste, plano e depois avulsos: o que vence primeiro sai primeiro.</p></div></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Preços -->
+    <section id="planos" class="sec">
+      <div class="wrap">
+        <div class="sec-head">
+          <span class="pill">Preços</span>
+          <h2 class="h2" style="margin-top:1rem">Planos para cada <span class="em">volume</span></h2>
+          <p class="lede">Assine no cartão de crédito e cancele quando quiser. Para uma remessa pontual, compre créditos avulsos no cartão ou PIX.</p>
+        </div>
+        <div class="trial">
+          <div class="flex gap-4 items-start"><span class="icon-tile" style="flex-shrink:0"><i class="ri-gift-line"></i></span><div><strong style="font-size:1.0625rem">Teste grátis</strong><p style="font-size:.9375rem;color:var(--zinc-600);line-height:1.5;margin-top:.125rem">200 consultas por 7 dias, com a chave de API no primeiro acesso.</p></div></div>
+          <a class="btn btn-primary" href="https://wa.me/5534992885263" data-cta="register">Começar grátis</a>
+        </div>
+        <div id="planos-grid"></div>
+        <noscript><p class="lede">Ative o JavaScript para ver os planos, ou <a class="em" href="https://wa.me/5534992885263">fale com a gente no WhatsApp</a>.</p></noscript>
+        <ul style="display:grid;gap:.5rem;font-size:.875rem;color:var(--zinc-600);line-height:1.6;margin-top:.5rem">
+          <li>Valores em reais, por mês. Os créditos do plano acumulam enquanto a assinatura estiver ativa.</li>
+          <li>Upgrade vale na hora e o downgrade, no próximo ciclo.</li>
+          <li>A assinatura é só no cartão de crédito; o avulso aceita cartão ou PIX.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 6. Do dado à venda -->
+    <section id="crm" class="sec sec-alt">
+      <div class="wrap">
+        <div class="sec-head">
+          <span class="pill">Do dado à venda</span>
+          <h2 class="h2" style="margin-top:1rem">Do dado à <span class="em">venda</span>, na mesma conta</h2>
+          <p class="lede">Com o mesmo login você também acessa o CRM da BuscaLead: do Buscador ao disparo em massa no WhatsApp e ao agente de IA que qualifica as respostas.</p>
+        </div>
+        <ol class="flow">
+          <li><span class="step-tile hi"><i class="ri-database-2-line"></i></span><div><strong>API de dados</strong><p style="font-size:.875rem;color:var(--zinc-600);line-height:1.5;margin-top:.25rem">Empresas por filtro, com contato.</p></div></li>
+          <li><span class="step-tile"><i class="ri-list-check-2"></i></span><div><strong>Listas</strong><p style="font-size:.875rem;color:var(--zinc-600);line-height:1.5;margin-top:.25rem">O público-alvo organizado.</p></div></li>
+          <li><span class="step-tile"><i class="ri-whatsapp-line"></i></span><div><strong>Disparo em massa</strong><p style="font-size:.875rem;color:var(--zinc-600);line-height:1.5;margin-top:.25rem">Campanhas de WhatsApp para a lista.</p></div></li>
+          <li><span class="step-tile"><i class="ri-robot-line"></i></span><div><strong>Agente de IA</strong><p style="font-size:.875rem;color:var(--zinc-600);line-height:1.5;margin-top:.25rem">Conversa e qualifica quem responde.</p></div></li>
+          <li><span class="step-tile"><i class="ri-line-chart-line"></i></span><div><strong>CRM</strong><p style="font-size:.875rem;color:var(--zinc-600);line-height:1.5;margin-top:.25rem">Negócios no pipeline até o fechamento.</p></div></li>
+        </ol>
+        <div style="margin-top:2.5rem"><a class="btn btn-secondary btn-lg" href="https://buscalead.com" rel="noopener">Conhecer o CRM da BuscaLead <i class="ri-arrow-right-up-line"></i></a></div>
+      </div>
+    </section>
+
+    <!-- 7. FAQ -->
+    <section id="faq" class="sec">
+      <div class="wrap">
+        <div class="sec-head">
+          <span class="pill">Perguntas frequentes</span>
+          <h2 class="h2" style="margin-top:1rem">Tudo o que costumam <span class="em">perguntar</span></h2>
+        </div>
+        <div class="grid gap-3" style="max-width:48rem">
+          <details class="faq"><summary>Como funciona o teste grátis?</summary><div class="ans">Ao criar a conta você recebe 200 consultas, válidas por 7 dias, e a primeira chave de API no painel. Os créditos de teste são liberados depois de confirmar o e-mail, e cada telefone tem direito a um teste.</div></details>
+          <details class="faq"><summary>O que conta como uma consulta?</summary><div class="ans">1 crédito = 1 empresa devolvida na busca ou 1 CNPJ consultado, na consulta única e no lote. Busca sem resultado e chamadas com erro não cobram.</div></details>
+          <details class="faq"><summary>Busca sem resultado cobra crédito?</summary><div class="ans">Não. Só as empresas efetivamente devolvidas contam, e o débito acontece depois que a resposta é montada. Se a conexão cair antes da entrega, nada é debitado.</div></details>
+          <details class="faq"><summary>O que vem na resposta de cada empresa?</summary><div class="ans">Dados cadastrais, CNAEs, endereço, sócios, e-mail e telefones, cada telefone com o tipo (celular ou fixo), o DDD e o número completo com 55. Nem toda empresa tem telefone ou e-mail cadastrado: use <code class="ic">com_celular</code>, <code class="ic">com_fixo</code> e <code class="ic">com_email</code> para buscar só quem tem.</div></details>
+          <details class="faq"><summary>De onde vêm os dados?</summary><div class="ans">Da base pública de CNPJ da Receita Federal, organizada pela BuscaLead: +29 milhões de empresas ativas. Por padrão a busca devolve só empresas ativas, e o parâmetro <code class="ic">situacao</code> permite consultar as demais situações cadastrais.</div></details>
+          <details class="faq"><summary>Os créditos expiram?</summary><div class="ans">Os créditos do plano acumulam enquanto a assinatura estiver ativa; se ela for cancelada ou ficar inadimplente, expiram no fim do ciclo já pago. Os avulsos valem 12 meses e os de teste, 7 dias.</div></details>
+          <details class="faq"><summary>Posso trocar de plano ou cancelar?</summary><div class="ans">Sim, quando quiser e sem fidelidade. No upgrade, o plano novo é cobrado na hora e já concede os créditos dele (a renovação passa a ser na data do upgrade); o downgrade vale a partir do próximo ciclo.</div></details>
+          <details class="faq"><summary>Quais são as formas de pagamento?</summary><div class="ans">A assinatura é paga só no cartão de crédito, com cobrança mensal recorrente. O avulso aceita cartão ou PIX.</div></details>
+          <details class="faq"><summary>O que acontece quando o saldo acaba?</summary><div class="ans">A API responde 402 com uma mensagem clara e o link de compra, e nenhuma empresa é devolvida. Quando houver saldo de novo, as chamadas voltam a funcionar.</div></details>
+          <details class="faq"><summary>Funciona com n8n, Make e Zapier?</summary><div class="ans">Sim: use o módulo HTTP com a URL da API e o header <code class="ic">Authorization: Bearer</code>. Para código, a <a href="/docs.html">documentação</a> traz exemplos em curl, Node.js e Python.</div></details>
+          <details class="faq"><summary>Como falo com a equipe?</summary><div class="ans">Pelo WhatsApp: <a href="https://wa.me/5534992885263" data-cta="contact">fale com a gente</a>.</div></details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="ftr">
+    <div class="wrap">
+      <div class="grid gap-10 md:grid-cols-4">
+        <div class="md:col-span-1">
+          <a href="/" class="brand"><span class="brand-tile"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><polygon fill="#fff" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill-rule="evenodd" points="20 7.75 4 7.75 2 3 22 3 20 7.75"/><polygon fill="#fff" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill-rule="evenodd" points="17 14.875 7 14.875 5 10.125 19 10.125 17 14.875"/><polygon fill="#fff" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill-rule="evenodd" points="14 22 10 22 8 17.25 16 17.25 14 22"/></svg></span><span>Busca<span style="color:var(--emerald-500)">Lead</span></span></a>
+          <p style="font-size:.875rem;color:var(--zinc-600);line-height:1.6;margin:1rem 0 1.25rem">API de dados de empresas do Brasil, com contato e ecossistema de vendas.</p>
+          <div class="social flex gap-3">
+            <a href="https://www.linkedin.com/company/buscalead" rel="noopener" aria-label="LinkedIn"><i class="ri-linkedin-box-fill"></i></a>
+            <a href="https://www.instagram.com/buscalead.ai" rel="noopener" aria-label="Instagram"><i class="ri-instagram-line"></i></a>
+            <a href="https://wa.me/5534992885263" rel="noopener" aria-label="WhatsApp"><i class="ri-whatsapp-line"></i></a>
+          </div>
+        </div>
+        <div><h4>Produto</h4><ul><li><a href="#resposta">O que a API devolve</a></li><li><a href="#cobranca">Cobrança</a></li><li><a href="#planos">Preços</a></li><li><a href="#faq">Perguntas frequentes</a></li></ul></div>
+        <div><h4>Desenvolvedores</h4><ul><li><a href="/docs.html">Documentação da API v2</a></li><li><a href="/docs.html#legado">Legado / CRM (v1)</a></li><li><a href="/docs.html#webhooks">Webhooks de entrada</a></li></ul></div>
+        <div><h4>Empresa</h4><ul><li><a href="https://buscalead.com" rel="noopener">Plataforma BuscaLead</a></li><li><a href="https://buscalead.com/termos-de-uso" rel="noopener">Termos de uso</a></li><li><a href="https://buscalead.com/politica-de-privacidade" rel="noopener">Política de privacidade</a></li><li><a href="https://wa.me/5534992885263" rel="noopener" data-cta="contact">Fale com a gente</a></li></ul></div>
+      </div>
+      <p style="margin-top:2.5rem;font-size:.8125rem;color:var(--zinc-500)">&copy; 2026 BuscaLead. Todos os direitos reservados.</p>
+    </div>
+  </footer>
 </body>
 
 </html>

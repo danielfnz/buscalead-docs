@@ -1,0 +1,12 @@
+{
+  "name": "buscalead-docs",
+  "private": true,
+  "description": "Portal docs.buscalead.com (site estático). O package.json existe só para os testes Playwright; não vai para a imagem.",
+  "scripts": {
+    "test": "playwright test",
+    "test:nginx": "sh tests/docker-nginx.sh"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.59.1"
+  }
+}
