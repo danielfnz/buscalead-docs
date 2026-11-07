@@ -70,10 +70,16 @@ async function visibleText(page: Page): Promise<string> {
 async function setSales(page: Page, open: boolean): Promise<void> {
     await page.route('**/assets/site.js*', async (route) => {
         const res = await route.fetch();
-        const body = (await res.text()).replace('const SALES_OPEN = false;', `const SALES_OPEN = ${open};`);
+        const body = (await res.text()).replace(/const SALES_OPEN = (true|false);/, `const SALES_OPEN = ${open};`);
         await route.fulfill({ response: res, body });
     });
 }
+
+// Padrão determinístico: vendas fechadas (sem chamada real à api.buscalead.com). Os testes de vendas abertas
+// chamam setSales(page, true) depois, e a rota registrada por último vence.
+test.beforeEach(async ({ page }) => {
+    await setSales(page, false);
+});
 
 type Call = { method: string; path: string; body: Record<string, unknown> | null };
 
@@ -252,9 +258,13 @@ test.describe('produto (index.html)', () => {
         await expect(page.locator('#resposta button[data-group="socios"]')).toHaveAttribute('aria-pressed', 'true');
     });
 
-    test('SALES_OPEN vem desligado no arquivo', async () => {
+    test('SALES_OPEN vem ligado no arquivo (lançamento 2026-11-06) e o HTML versiona o site.js', async () => {
         const js = fs.readFileSync(path.join(ROOT, 'assets', 'site.js'), 'utf8');
-        expect(js).toContain('const SALES_OPEN = false;');
+        expect(js).toContain('const SALES_OPEN = true;');
+        for (const page of ['index.html', 'docs.html', 'contratacao/sucesso.html']) {
+            const html = fs.readFileSync(path.join(ROOT, page), 'utf8');
+            expect(html, page).toMatch(/src="\/assets\/site\.js\?v=\d{8}"/);
+        }
     });
 
     test('SALES_OPEN=false: nenhuma requisição à api.buscalead.com; "Assinar" e "Começar grátis" abrem o "Fale com a gente"', async ({ page }) => {

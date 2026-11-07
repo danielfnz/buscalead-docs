@@ -11,7 +11,7 @@
     // true: "Começar grátis" leva ao cadastro e os botões de compra seguem o checkout público (Plano B).
     // Só vire para true depois que o Plano B (checkout público da API), o painel (Plano C) e a v2 (Plano A)
     // estiverem no ar.
-    const SALES_OPEN = false;
+    const SALES_OPEN = true;
 
     const API_BASE = 'https://api.buscalead.com';
     const REGISTER_URL = 'https://buscalead.com/auth/register?returnUrl=%2Fapi%2Fpainel';
@@ -437,7 +437,8 @@
         initExplorer();
         initTabs();
         initChrome();
-        if (SALES_OPEN) checkCatalog();
+        // Só a página com a grade de planos confere o catálogo (doc e retorno do checkout nunca chamam a API).
+        if (SALES_OPEN && $('#planos-grid')) checkCatalog();
     }
 
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
