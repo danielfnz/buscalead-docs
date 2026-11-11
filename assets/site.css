@@ -280,3 +280,13 @@ code.ic, .dsec p code, .dsec li code, .tbl code, .note code, .legacy code.ic { f
 .ret-ico { width: 64px; height: 64px; border-radius: 20px; margin: 0 auto 1.5rem; display: flex; align-items: center; justify-content: center; font-size: 1.75rem; background: var(--emerald-50); color: var(--emerald-600); border: 1px solid var(--emerald-200); }
 .btn-row { display: flex; flex-wrap: wrap; justify-content: center; gap: .75rem; margin-top: 2rem; }
 .ret-ico.warn { background: var(--yellow-50); color: var(--yellow-700); border-color: var(--yellow-200); }
+
+/* Console (prints do painel da API) */
+.shots { display: grid; gap: 1.5rem; margin-top: 2rem; }
+@media (min-width: 900px) { .shots { grid-template-columns: 1fr 1fr; } }
+.shot { background: #fff; border: 1px solid var(--zinc-200); border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-sm); }
+.shot-bar { display: flex; gap: 6px; padding: .625rem .875rem; border-bottom: 1px solid var(--zinc-100); background: var(--zinc-50); }
+.shot-bar span { width: 8px; height: 8px; border-radius: 9999px; background: var(--zinc-300); }
+.shot img { display: block; width: 100%; height: auto; aspect-ratio: 1920 / 1470; object-fit: cover; object-position: top; }
+.shot figcaption { padding: .875rem 1.125rem 1rem; font-size: .875rem; line-height: 1.55; color: var(--zinc-600); border-top: 1px solid var(--zinc-100); }
+.shot figcaption strong { color: var(--zinc-900); }

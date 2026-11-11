@@ -569,6 +569,22 @@ test.describe('documentação (docs.html)', () => {
         await expect(page.locator('section#busca')).toContainText('listas de referência abertas');
     });
 
+    test('landing mostra o console com prints reais de Pesquisar e Playground', async ({ page }) => {
+        await page.goto('/index.html');
+        const section = page.locator('section#console');
+        await expect(section).toBeVisible();
+        const images = section.locator('img');
+        await expect(images).toHaveCount(2);
+        for (const i of [0, 1]) {
+            const img = images.nth(i);
+            expect(await img.evaluate((el: HTMLImageElement) => el.naturalWidth), `imagem ${i} não carregou`).toBeGreaterThan(0);
+            expect(await img.getAttribute('alt')).toMatch(/painel da BuscaLead/i);
+        }
+        await expect(section).toContainText('Pesquisar');
+        await expect(section).toContainText('Playground');
+        await expect(section).toContainText('sem escrever código');
+    });
+
     test('links antigos do domínio (#webhooks-*, #busca-rapida) redirecionam do index para a doc', async ({ page }) => {
         await page.goto('/index.html#webhooks-visao-geral');
         await expect(page).toHaveURL(/\/docs\.html#webhooks-visao-geral$/);

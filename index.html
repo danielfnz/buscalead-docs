@@ -65,6 +65,7 @@
       </a>
       <nav class="nav-top hidden lg:flex items-center gap-1" aria-label="Principal">
         <a href="#resposta">Resposta</a>
+        <a href="#console">Console</a>
         <a href="#cobranca">Cobrança</a>
         <a href="#planos">Preços</a>
         <a href="#faq">FAQ</a>
@@ -78,6 +79,7 @@
   </header>
   <div id="mnav" hidden>
     <a href="#resposta">Resposta</a>
+    <a href="#console">Console</a>
     <a href="#cobranca">Cobrança</a>
     <a href="#planos">Preços</a>
     <a href="#faq">FAQ</a>
@@ -256,7 +258,36 @@ Authorization: Bearer bl_sua_chave</pre></div></div>
       </div>
     </section>
 
-    <!-- 4. Como funciona a cobrança -->
+    <!-- 4. Console: prints reais das telas Pesquisar e Playground -->
+    <section id="console" class="sec sec-alt">
+      <div class="wrap">
+        <div class="sec-head">
+          <span class="pill">Console</span>
+          <h2 class="h2" style="margin-top:1rem">Pesquise e teste <span class="em">sem escrever código</span></h2>
+          <p class="lede">O painel da API traz busca guiada, consulta por CNPJ, lote e um playground que executa a chamada de verdade — com os mesmos créditos da API.</p>
+        </div>
+        <div class="shots">
+          <figure class="shot">
+            <div class="shot-bar" aria-hidden="true"><span></span><span></span><span></span></div>
+            <img src="/assets/api-pesquisar.png" width="1920" height="1470" loading="lazy" decoding="async"
+              alt="Tela Pesquisar do painel da BuscaLead: filtros de CNAE, UF e município com listas de busca e o resultado com CNPJ, empresa, local, telefone e situação.">
+            <figcaption><strong>Pesquisar</strong> — CNAE e município saem de listas com busca, sem decorar códigos. O resultado mostra CNPJ, empresa, local, telefone e situação.</figcaption>
+          </figure>
+          <figure class="shot">
+            <div class="shot-bar" aria-hidden="true"><span></span><span></span><span></span></div>
+            <img src="/assets/api-playground.png" width="1920" height="1470" loading="lazy" decoding="async"
+              alt="Tela Playground do painel da BuscaLead: endpoint da API, parâmetros chave e valor, botão executar e a resposta JSON com status, tempo e créditos.">
+            <figcaption><strong>Playground</strong> — escolha o endpoint, monte os parâmetros, copie como curl e execute. A resposta vem com status, tempo, créditos e o JSON cru.</figcaption>
+          </figure>
+        </div>
+        <div class="flex flex-wrap items-center gap-3" style="margin-top:1.75rem">
+          <a class="btn btn-primary" href="https://buscalead.com/api/painel">Abrir o painel</a>
+          <a class="btn btn-secondary" href="/docs.html">Ver a documentação</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Como funciona a cobrança -->
     <section id="cobranca" class="sec sec-alt">
       <div class="wrap">
         <div class="sec-head">
@@ -326,7 +357,7 @@ Authorization: Bearer bl_sua_chave</pre></div></div>
       </div>
     </section>
 
-    <!-- 7. FAQ -->
+    <!-- 8. FAQ -->
     <section id="faq" class="sec">
       <div class="wrap">
         <div class="sec-head">
