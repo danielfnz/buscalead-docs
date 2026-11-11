@@ -66,6 +66,7 @@
       <nav class="nav-top hidden lg:flex items-center gap-1" aria-label="Principal">
         <a href="#resposta">Resposta</a>
         <a href="#console">Console</a>
+        <a href="#ia">Agentes de IA</a>
         <a href="#cobranca">Cobrança</a>
         <a href="#planos">Preços</a>
         <a href="#faq">FAQ</a>
@@ -80,6 +81,7 @@
   <div id="mnav" hidden>
     <a href="#resposta">Resposta</a>
     <a href="#console">Console</a>
+    <a href="#ia">Agentes de IA</a>
     <a href="#cobranca">Cobrança</a>
     <a href="#planos">Preços</a>
     <a href="#faq">FAQ</a>
@@ -287,7 +289,49 @@ Authorization: Bearer bl_sua_chave</pre></div></div>
       </div>
     </section>
 
-    <!-- 5. Como funciona a cobrança -->
+    <!-- 5. Agentes de IA: MCP -->
+    <section id="ia" class="sec">
+      <div class="wrap">
+        <div class="sec-head">
+          <span class="pill">Agentes de IA</span>
+          <h2 class="h2" style="margin-top:1rem">Seu agente consulta a base <span class="em">por conta própria</span></h2>
+          <p class="lede">Um servidor MCP pronto para Claude Code, Codex, Hermes Agent e OpenClaw. O agente busca
+            empresas, consulta CNPJ e confere o saldo — com os mesmos créditos da API.</p>
+        </div>
+        <div class="grid gap-4 md:grid-cols-4">
+          <article class="card" style="padding:1.25rem">
+            <span class="icon-tile"><i class="ri-terminal-box-line"></i></span>
+            <h3 style="font-size:1rem;font-weight:700;margin:1rem 0 .375rem">Claude Code</h3>
+            <p style="font-size:.875rem;color:var(--zinc-600);line-height:1.6">Um comando conecta o servidor e o
+              agente já enxerga as ferramentas.</p>
+          </article>
+          <article class="card" style="padding:1.25rem">
+            <span class="icon-tile"><i class="ri-code-box-line"></i></span>
+            <h3 style="font-size:1rem;font-weight:700;margin:1rem 0 .375rem">Codex</h3>
+            <p style="font-size:.875rem;color:var(--zinc-600);line-height:1.6">Três linhas no <code>config.toml</code>,
+              com a chave vinda do ambiente.</p>
+          </article>
+          <article class="card" style="padding:1.25rem">
+            <span class="icon-tile"><i class="ri-robot-2-line"></i></span>
+            <h3 style="font-size:1rem;font-weight:700;margin:1rem 0 .375rem">Hermes Agent</h3>
+            <p style="font-size:.875rem;color:var(--zinc-600);line-height:1.6">Bloco <code>mcp_servers</code> no
+              <code>~/.hermes/config.yaml</code>, sem instalar nada.</p>
+          </article>
+          <article class="card" style="padding:1.25rem">
+            <span class="icon-tile"><i class="ri-command-line"></i></span>
+            <h3 style="font-size:1rem;font-weight:700;margin:1rem 0 .375rem">OpenClaw</h3>
+            <p style="font-size:.875rem;color:var(--zinc-600);line-height:1.6"><code>openclaw mcp add</code> com
+              transporte streamable HTTP e as ferramentas certas.</p>
+          </article>
+        </div>
+        <div class="flex flex-wrap items-center gap-3" style="margin-top:1.75rem">
+          <a class="btn btn-primary" href="/docs.html#mcp">Ver como conectar</a>
+          <a class="btn btn-secondary" href="https://buscalead.com/api/painel?tab=chaves">Criar uma chave</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. Como funciona a cobrança -->
     <section id="cobranca" class="sec sec-alt">
       <div class="wrap">
         <div class="sec-head">
@@ -357,7 +401,7 @@ Authorization: Bearer bl_sua_chave</pre></div></div>
       </div>
     </section>
 
-    <!-- 8. FAQ -->
+    <!-- 9. FAQ -->
     <section id="faq" class="sec">
       <div class="wrap">
         <div class="sec-head">

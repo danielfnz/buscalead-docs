@@ -59,6 +59,11 @@
       <a class="nav-a" href="#paginacao">Paginação</a>
       <a class="nav-a" href="#erros">Erros</a>
       <a class="nav-a" href="#limites">Limites</a>
+      <p class="nav-g">Agentes de IA</p>
+      <a class="nav-a" href="#mcp">MCP</a>
+      <a class="nav-a sub" href="#mcp-conectar">Conectar</a>
+      <a class="nav-a sub" href="#mcp-ferramentas">Ferramentas</a>
+      <a class="nav-a sub" href="#mcp-receitas">Receitas por ferramenta</a>
       <p class="nav-g">CRM</p>
       <a class="nav-a" href="#webhooks">Webhooks de entrada</a>
       <a class="nav-a sub" href="#webhooks-visao-geral">Visão geral</a>
@@ -551,6 +556,94 @@ for (let page = 1; ; page++) {
         </table></div>
         <div class="note note-warn"><i class="ri-error-warning-line"></i><div>Ao receber 429, espere o tempo do <code>Retry-After</code> antes de tentar de novo. Repetir chamadas durante o bloqueio reduz o seu limite temporariamente e pode bloquear o IP por alguns minutos.</div></div>
         <p>Toda resposta da v2 leva <code class="ic">Cache-Control: no-store</code>.</p>
+      </section>
+
+
+      <!-- MCP para agentes de IA -->
+      <section id="mcp" class="dsec">
+        <span class="pill">Agentes de IA</span>
+        <h2><i class="ri-robot-2-line"></i> MCP para agentes de IA</h2>
+        <p class="lede">Conecte Claude Code, Codex, Hermes Agent e OpenClaw à base de empresas. O servidor MCP
+          fala Streamable HTTP, usa a mesma chave da API e cobra os mesmos créditos — sem instalar nada.</p>
+
+        <div class="note note-info"><i class="ri-information-line"></i>
+          <div><strong>Servidor:</strong> <code class="ic">https://api.buscalead.com/mcp</code> ·
+            <strong>Transporte:</strong> Streamable HTTP · <strong>Auth:</strong> <code class="ic">Authorization: Bearer bl_...</code>
+          </div>
+        </div>
+
+        <section id="mcp-conectar" class="dsec">
+          <h2>Conectar</h2>
+          <p>Crie uma chave em <a class="lnk" href="https://buscalead.com/api/painel?tab=chaves">Chaves de API</a> e
+            configure o servidor na ferramenta que você usa. O agente descobre as ferramentas sozinho.</p>
+
+          <div class="tbl"><table>
+            <thead><tr><th>Ferramenta</th><th>Como conectar</th></tr></thead>
+            <tbody>
+              <tr><td>Claude Code</td><td><code>claude mcp add</code> com transporte HTTP e header</td></tr>
+              <tr><td>Codex</td><td><code>config.toml</code> com <code>url</code> e token no ambiente</td></tr>
+              <tr><td>Hermes Agent</td><td><code>~/.hermes/config.yaml</code>, bloco <code>mcp_servers</code></td></tr>
+              <tr><td>OpenClaw</td><td><code>openclaw mcp add</code> ou <code>mcp.servers</code> no config</td></tr>
+            </tbody>
+          </table></div>
+
+          <p class="text-sm text-zinc-500">Limite de 60 chamadas de ferramenta por minuto por chave. Cada consulta
+            consome créditos como na API; <code>consultar_saldo</code> e <code>buscar_referencias</code> não cobram.</p>
+        </section>
+
+        <section id="mcp-ferramentas" class="dsec">
+          <h2>Ferramentas</h2>
+          <div class="tbl"><table>
+            <thead><tr><th>Ferramenta</th><th>O que faz</th><th>Custo</th></tr></thead>
+            <tbody>
+              <tr><td><code>buscar_empresas</code></td><td>Busca por CNAE, UF, município, porte, situação, MEI, contato e data de abertura. Exige ao menos um filtro.</td><td>1 crédito por empresa devolvida</td></tr>
+              <tr><td><code>consultar_empresa</code></td><td>Ficha de uma empresa pelo CNPJ.</td><td>1 crédito (404 não cobra)</td></tr>
+              <tr><td><code>consultar_lote</code></td><td>Até 100 CNPJs em uma chamada.</td><td>1 crédito por encontrada</td></tr>
+              <tr><td><code>consultar_saldo</code></td><td>Saldo total e por bucket, com vencimentos.</td><td>grátis</td></tr>
+              <tr><td><code>buscar_referencias</code></td><td>Códigos de CNAE e município para usar nos filtros.</td><td>grátis</td></tr>
+            </tbody>
+          </table></div>
+          <p class="text-sm text-zinc-500">No MCP, <code>buscar_empresas</code> devolve no máximo 20 empresas por
+            página (padrão 5) para não estourar o contexto do agente. Use <code>page</code> para paginar.</p>
+        </section>
+
+        <section id="mcp-receitas" class="dsec">
+          <h2>Receitas por ferramenta</h2>
+
+          <h3>Claude Code</h3>
+          <pre data-code data-lang="bash" data-title="Terminal">claude mcp add --transport http buscandlead https://api.buscalead.com/mcp \
+  --header "Authorization: Bearer bl_SUA_CHAVE"</pre>
+
+          <h3>Codex</h3>
+          <p>Guarde a chave no ambiente (<code class="ic">export BUSCALEAD_API_KEY=bl_SUA_CHAVE</code>) e adicione ao
+            <code class="ic">~/.codex/config.toml</code>:</p>
+          <pre data-code data-lang="text" data-title="~/.codex/config.toml">[mcp_servers.buscalead]
+url = "https://api.buscalead.com/mcp"
+bearer_token_env_var = "BUSCALEAD_API_KEY"</pre>
+
+          <h3>Hermes Agent</h3>
+          <p>Adicione ao <code class="ic">~/.hermes/config.yaml</code>:</p>
+          <pre data-code data-lang="text" data-title="~/.hermes/config.yaml">mcp_servers:
+  buscandlead:
+    url: "https://api.buscalead.com/mcp"
+    headers:
+      Authorization: "Bearer bl_SUA_CHAVE"</pre>
+          <p class="text-sm text-zinc-500">Depois de editar, rode <code class="ic">/reload-mcp</code> dentro da sessão
+            (ou reinicie o Hermes).</p>
+
+          <h3>OpenClaw</h3>
+          <pre data-code data-lang="bash" data-title="Terminal">openclaw mcp add buscandlead \
+  --url https://api.buscalead.com/mcp \
+  --transport streamable-http \
+  --include 'buscar_*,consultar_*'
+openclaw mcp doctor buscandlead --probe</pre>
+
+          <h3>Exemplos de pedido</h3>
+          <pre data-code data-lang="text" data-title="Prompts">Quantas farmácias ativas existem em Campinas? Use buscar_referencias para o CNAE e o município.
+Me dá 10 restaurantes em Belo Horizonte com celular e e-mail.
+Confere o CNPJ 69.562.612/0001-74 e me diz só a situação e o telefone.
+Qual é o meu saldo de créditos?</pre>
+        </section>
       </section>
 
       <!-- Webhooks de entrada -->

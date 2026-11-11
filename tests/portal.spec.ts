@@ -443,6 +443,7 @@ async function codeBlocks(page: Page, scope: string): Promise<Array<{ title: str
 const NAV_ITEMS: Array<[string | RegExp, string]> = [
     ['Introdução', 'introducao'], ['Autenticação', 'autenticacao'], ['Créditos e cobrança', 'creditos'], ['Busca', 'busca'],
     ['Consulta por CNPJ', 'consulta-cnpj'], ['Lote', 'lote'], ['Paginação', 'paginacao'], ['Erros', 'erros'], ['Limites', 'limites'],
+    ['MCP', 'mcp'], ['Conectar', 'mcp-conectar'], ['Ferramentas', 'mcp-ferramentas'], ['Receitas por ferramenta', 'mcp-receitas'],
     ['Webhooks de entrada', 'webhooks'],
 ];
 
@@ -577,12 +578,44 @@ test.describe('documentação (docs.html)', () => {
         await expect(images).toHaveCount(2);
         for (const i of [0, 1]) {
             const img = images.nth(i);
-            expect(await img.evaluate((el: HTMLImageElement) => el.naturalWidth), `imagem ${i} não carregou`).toBeGreaterThan(0);
             expect(await img.getAttribute('alt')).toMatch(/painel da BuscaLead/i);
+            // `loading="lazy"`: só carrega quando entra na viewport.
+            await img.scrollIntoViewIfNeeded();
+            await expect.poll(
+                () => img.evaluate((el: HTMLImageElement) => el.complete && el.naturalWidth),
+                { message: `imagem ${i} não carregou` },
+            ).toBeGreaterThan(0);
         }
         await expect(section).toContainText('Pesquisar');
         await expect(section).toContainText('Playground');
         await expect(section).toContainText('sem escrever código');
+    });
+
+    test('landing: seção Agentes de IA aponta para o MCP', async ({ page }) => {
+        await page.goto('/index.html');
+        const section = page.locator('section#ia');
+        await expect(section).toBeVisible();
+        for (const name of ['Claude Code', 'Codex', 'Hermes Agent', 'OpenClaw']) {
+            await expect(section).toContainText(name);
+        }
+        await expect(section.getByRole('link', { name: 'Ver como conectar' })).toHaveAttribute('href', '/docs.html#mcp');
+    });
+
+    test('MCP: endpoint, ferramentas e receitas para as quatro ferramentas', async ({ page }) => {
+        await page.goto('/docs.html#mcp');
+        const section = page.locator('section#mcp');
+        await expect(section).toBeVisible();
+        await expect(section).toContainText('https://api.buscalead.com/mcp');
+        await expect(section).toContainText('Streamable HTTP');
+        for (const tool of ['buscar_empresas', 'consultar_empresa', 'consultar_lote', 'consultar_saldo', 'buscar_referencias']) {
+            await expect(section).toContainText(tool);
+        }
+        for (const client of ['Claude Code', 'Codex', 'Hermes Agent', 'OpenClaw']) {
+            await expect(section).toContainText(client);
+        }
+        await expect(section).toContainText('claude mcp add');
+        await expect(section).toContainText('mcp_servers');
+        await expect(section).toContainText('openclaw mcp add');
     });
 
     test('links antigos do domínio (#webhooks-*, #busca-rapida) redirecionam do index para a doc', async ({ page }) => {
