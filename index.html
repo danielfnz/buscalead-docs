@@ -21,10 +21,10 @@
   <script>
     // Links antigos (docs.buscalead.com/#webhooks-visao-geral, #busca-rapida...) agora vivem em docs.html.
     (function () {
-      var v1 = { 'rate-limiting': 'v1-rate-limiting', 'busca-rapida': 'v1-busca-rapida', 'busca-avancada': 'v1-busca-avancada', 'detalhes-empresa': 'v1-detalhes-empresa', 'detalhes-cnpj': 'v1-detalhes-cnpj', 'cnaes': 'v1-cnaes', 'estados': 'v1-estados', 'natureza-juridica': 'v1-natureza-juridica', 'introducao': 'introducao', 'autenticacao': 'autenticacao', 'erros': 'erros', 'paginacao': 'paginacao' };
+      var antigos = { 'rate-limiting': 'limites', 'busca-rapida': 'busca', 'busca-avancada': 'busca', 'detalhes-empresa': 'busca', 'detalhes-cnpj': 'consulta-cnpj', 'cnaes': 'busca', 'estados': 'busca', 'natureza-juridica': 'busca', 'introducao': 'introducao', 'autenticacao': 'autenticacao', 'erros': 'erros', 'paginacao': 'paginacao' };
       var h = decodeURIComponent(location.hash.slice(1));
       if (/^webhooks-/.test(h)) location.replace('/docs.html#' + h);
-      else if (v1[h]) location.replace('/docs.html#' + v1[h]);
+      else if (antigos[h]) location.replace('/docs.html#' + antigos[h]);
     })();
   </script>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
@@ -363,7 +363,7 @@ Authorization: Bearer bl_sua_chave</pre></div></div>
           </div>
         </div>
         <div><h4>Produto</h4><ul><li><a href="#resposta">O que a API devolve</a></li><li><a href="#cobranca">Cobrança</a></li><li><a href="#planos">Preços</a></li><li><a href="#faq">Perguntas frequentes</a></li></ul></div>
-        <div><h4>Desenvolvedores</h4><ul><li><a href="/docs.html">Documentação da API v2</a></li><li><a href="/docs.html#legado">Legado / CRM (v1)</a></li><li><a href="/docs.html#webhooks">Webhooks de entrada</a></li></ul></div>
+        <div><h4>Desenvolvedores</h4><ul><li><a href="/docs.html">Documentação da API v2</a></li><li><a href="/docs.html#webhooks">Webhooks de entrada</a></li></ul></div>
         <div><h4>Empresa</h4><ul><li><a href="https://buscalead.com" rel="noopener">Plataforma BuscaLead</a></li><li><a href="https://buscalead.com/termos-de-uso" rel="noopener">Termos de uso</a></li><li><a href="https://buscalead.com/politica-de-privacidade" rel="noopener">Política de privacidade</a></li><li><a href="https://wa.me/5534992885263" rel="noopener" data-cta="contact">Fale com a gente</a></li></ul></div>
       </div>
       <p style="margin-top:2.5rem;font-size:.8125rem;color:var(--zinc-500)">&copy; 2026 BuscaLead. Todos os direitos reservados.</p>

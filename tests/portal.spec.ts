@@ -443,7 +443,7 @@ async function codeBlocks(page: Page, scope: string): Promise<Array<{ title: str
 const NAV_ITEMS: Array<[string | RegExp, string]> = [
     ['Introdução', 'introducao'], ['Autenticação', 'autenticacao'], ['Créditos e cobrança', 'creditos'], ['Busca', 'busca'],
     ['Consulta por CNPJ', 'consulta-cnpj'], ['Lote', 'lote'], ['Paginação', 'paginacao'], ['Erros', 'erros'], ['Limites', 'limites'],
-    [/^Legado\s*\/\s*CRM$/, 'legado'], ['Webhooks de entrada', 'webhooks'],
+    ['Webhooks de entrada', 'webhooks'],
 ];
 
 test.describe('documentação (docs.html)', () => {
@@ -554,28 +554,28 @@ test.describe('documentação (docs.html)', () => {
         expect(await t('lote')).toMatch(/invalid/);
     });
 
-    test('Legado / CRM: aviso da spec 6.8, doc da v1 e webhooks de entrada preservados', async ({ page }) => {
+    test('doc da v1 removida do site e webhooks de entrada preservados', async ({ page }) => {
         await page.goto('/docs.html');
-        const legado = (await page.locator('section#legado .legacy-notice').innerText()).replace(/\s+/g, ' ');
-        expect(legado).toMatch(/chave do CRM/);
-        expect(legado).toMatch(/lançamento da v2/);
-        for (const id of ['v1-introducao', 'v1-autenticacao', 'v1-rate-limiting', 'v1-erros', 'v1-paginacao', 'v1-busca-rapida', 'v1-busca-avancada', 'v1-detalhes-empresa', 'v1-detalhes-cnpj', 'v1-cnaes', 'v1-estados', 'v1-natureza-juridica']) {
-            await expect(page.locator(`section#legado section#${id}`), id).toHaveCount(1);
-        }
+        await expect(page.locator('section#legado')).toHaveCount(0);
+        await expect(page.locator('section[id^="v1-"]')).toHaveCount(0);
+        await expect(page.locator('nav a[href="#legado"], nav a[href^="#v1-"]')).toHaveCount(0);
+        await expect(page.locator('aside nav')).not.toContainText('Legado / CRM');
+        await expect(page.locator('main')).not.toContainText('Legado / CRM');
         for (const id of ['webhooks-visao-geral', 'webhooks-secret-header', 'webhooks-assinatura', 'webhooks-payload', 'webhooks-deduplicacao', 'webhooks-respostas']) {
             await expect(page.locator(`section#webhooks section#${id}`), id).toHaveCount(1);
         }
-        await expect(page.locator('section#v1-rate-limiting')).toContainText('120');
         await expect(page.locator('section#webhooks')).toContainText('Starter, Plus, Business e Pro');
-        // blocos de código legados continuam copiáveis
-        expect(await page.locator('section#legado .code-window .copy-btn').count()).toBeGreaterThan(5);
+        // listas de referência continuam documentadas na busca da v2
+        await expect(page.locator('section#busca')).toContainText('listas de referência abertas');
     });
 
     test('links antigos do domínio (#webhooks-*, #busca-rapida) redirecionam do index para a doc', async ({ page }) => {
         await page.goto('/index.html#webhooks-visao-geral');
         await expect(page).toHaveURL(/\/docs\.html#webhooks-visao-geral$/);
         await page.goto('/index.html#busca-rapida');
-        await expect(page).toHaveURL(/\/docs\.html#v1-busca-rapida$/);
+        await expect(page).toHaveURL(/\/docs\.html#busca$/);
+        await page.goto('/index.html#detalhes-cnpj');
+        await expect(page).toHaveURL(/\/docs\.html#consulta-cnpj$/);
     });
 
     test('0 erros de console, sem concorrente, sem complexidade, sem promessa de atualização', async ({ page }) => {

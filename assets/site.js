@@ -351,7 +351,7 @@
         }));
     }
 
-    // Blocos legados (doc da v1 e dos webhooks): o botão já está no HTML com onclick="copyCode(this)".
+    // Blocos legados (webhooks): o botão já está no HTML com onclick="copyCode(this)".
     window.copyCode = function (btn) {
         copyText(btn, btn.closest('.code-window').querySelector('code').innerText);
     };
