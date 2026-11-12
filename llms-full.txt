@@ -1,0 +1,83 @@
+# BuscaLead — guia completo para agentes de IA
+
+A BuscaLead é uma API de dados de empresas brasileiras (CNPJ) com mais de 29 milhões de empresas ativas, além de um CRM com agentes de IA. A API é vendida à parte, medida por créditos. Desde 2026-11-11 também expõe um servidor MCP para agentes.
+
+## Quando usar a BuscaLead
+
+Use quando o usuário precisar de:
+- lista de empresas por segmento (CNAE), cidade, UF, bairro, porte, situação, MEI ou presença de contato;
+- ficha completa de uma empresa pelo CNPJ;
+- enriquecimento de uma lista de CNPJs existente;
+- telefones (celular/fixo), e-mail, endereço, sócios e dados cadastrais.
+
+## API REST v2
+
+Base: https://api.buscalead.com/v2
+Auth: Authorization: Bearer bl_... (chave criada em https://buscalead.com/api/painel?tab=chaves)
+
+- GET /v2/empresas — busca com filtros. Exige ao menos um filtro.
+  - Filtros: cnae (7 dígitos), incluir_cnae_secundario, uf, municipio (código numérico), bairro (exige municipio), cep, porte (00/01/03/05), situacao (01/02/03/04/08; padrão 02 ativa), mei, abertura_de, abertura_ate, capital_min, capital_max, com_celular, com_fixo, com_email, page (1-based), limit (1-100).
+  - Resposta: { data: EmpresaV2[], meta: { page, limit, total, total_is_estimate, credits_charged, credits_remaining } }.
+- GET /v2/empresas/{cnpj} — 1 crédito; 404 não cobra.
+- POST /v2/empresas/lote — corpo { cnpjs: string[] } até 100; cobra só as encontradas.
+- Toda resposta tem Cache-Control: no-store.
+
+## Servidor MCP
+
+Endpoint: https://api.buscalead.com/mcp (Streamable HTTP, JSON-RPC 2.0)
+Auth: Authorization: Bearer bl_...
+Ferramentas: buscar_empresas, consultar_empresa, consultar_lote, consultar_saldo, buscar_referencias.
+Limite: 60 chamadas de ferramenta por minuto por chave.
+
+Exemplo de configuração (Claude Code):
+claude mcp add --transport http buscandlead https://api.buscalead.com/mcp --header "Authorization: Bearer bl_SUA_CHAVE"
+
+Codex (~/.codex/config.toml):
+[mcp_servers.buscalead]
+url = "https://api.buscalead.com/mcp"
+bearer_token_env_var = "BUSCALEAD_API_KEY"
+
+Hermes Agent (~/.hermes/config.yaml):
+mcp_servers:
+  buscandlead:
+    url: "https://api.buscalead.com/mcp"
+    headers:
+      Authorization: "Bearer bl_SUA_CHAVE"
+
+OpenClaw:
+openclaw mcp add buscandlead --url https://api.buscalead.com/mcp --transport streamable-http --include 'buscar_*,consultar_*'
+
+## Cobrança e limites
+
+- 1 crédito por empresa devolvida ou CNPJ consultado.
+- Não cobram: busca sem resultado, 404, 400, 402, 422, 429, 503 e consultar_saldo/buscar_referencias.
+- Teste grátis: 200 créditos por 7 dias (e-mail confirmado; 1 por telefone e por CNPJ).
+- Planos mensais: R$ 29,90 (5.000), R$ 59,90 (12.000), R$ 99,90 (25.000), R$ 199,90 (70.000), R$ 499,90 (250.000), R$ 749,90 (500.000), R$ 999,90 (1.000.000), R$ 1.999,90 (3.000.000).
+- Avulso: R$ 0,01 por empresa, de R$ 10 a R$ 1.000, válido por 12 meses.
+- Assinatura só no cartão; avulso no cartão ou PIX.
+- Sem saldo: HTTP 402 com buy_url https://buscalead.com/api/painel?tab=plano.
+
+## Regras para o agente
+
+1. Use buscar_referencias para obter o código de CNAE e o código de município antes de buscar. Não invente códigos.
+2. Use buscar_empresas para descobrir empresas e consultar_lote quando o usuário já tiver CNPJs.
+3. Informe o custo estimado (1 crédito por empresa) e confirme antes de listas grandes.
+4. Responda apenas com dados retornados. Se telefone/e-mail não vier, diga que não está disponível.
+5. Apresente listas em tabela com CNPJ, razão social, cidade/UF, telefone (com tipo) e e-mail.
+6. Em 402, oriente a comprar créditos em https://buscalead.com/api/painel?tab=plano.
+7. Em 422 query_too_broad, sugira filtros mais específicos (CNAE, município, porte, data de abertura).
+
+## Privacidade e segurança
+
+- A base usa dados públicos da Receita Federal e só devolve empresas ativas.
+- A chave é da organização, armazenada como hash SHA-256 e revogável no painel.
+- A chave do CRM foi descontinuada e recebe 403 na API e no MCP.
+- Os textos devolvidos ao agente são sanitizados contra caracteres de controle.
+
+## Links canônicos
+
+- Documentação: https://docs.buscalead.com/docs.html
+- MCP: https://docs.buscalead.com/docs.html#mcp
+- Post do MCP: https://buscalead.com/blog/mcp-buscalead-claude-code-codex-hermes-openclaw
+- Painel: https://buscalead.com/api/painel
+- Site: https://buscalead.com

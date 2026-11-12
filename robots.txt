@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /contratacao/
+
+# Conteúdo público aberto para buscadores e agentes de IA.
+# Fatos do produto para agentes: /llms.txt e /llms-full.txt

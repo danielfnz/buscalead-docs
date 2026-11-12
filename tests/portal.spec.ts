@@ -601,6 +601,20 @@ test.describe('documentação (docs.html)', () => {
         await expect(section.getByRole('link', { name: 'Ver como conectar' })).toHaveAttribute('href', '/docs.html#mcp');
     });
 
+    test('llms.txt e llms-full.txt publicam os fatos para agentes', async ({ page }) => {
+        for (const file of ['/llms.txt', '/llms-full.txt']) {
+            const res = await page.request.get(file);
+            expect(res.status(), file).toBe(200);
+            const text = await res.text();
+            expect(text, file).toContain('https://api.buscalead.com/mcp');
+            expect(text, file).toContain('buscar_empresas');
+            expect(text, file).toContain('1 crédito por empresa');
+        }
+        const robots = await page.request.get('/robots.txt');
+        expect(robots.status()).toBe(200);
+        expect(await robots.text()).toContain('User-agent: *');
+    });
+
     test('MCP: endpoint, ferramentas e receitas para as quatro ferramentas', async ({ page }) => {
         await page.goto('/docs.html#mcp');
         const section = page.locator('section#mcp');

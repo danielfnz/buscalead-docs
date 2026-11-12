@@ -1,0 +1,41 @@
+# BuscaLead
+
+> API de dados de empresas brasileiras (CNPJ) com mais de 29 milhões de empresas ativas. Busca por filtros, consulta por CNPJ e lote, medida por créditos. Também expõe um servidor MCP para agentes de IA (Claude Code, Codex, Hermes Agent e OpenClaw).
+
+## Produto
+
+- API REST v2: https://docs.buscalead.com/docs.html
+- Servidor MCP (Streamable HTTP): https://api.buscalead.com/mcp
+- Documentação do MCP: https://docs.buscalead.com/docs.html#mcp
+- Painel do cliente: https://buscalead.com/api/painel
+- Post de lançamento do MCP: https://buscalead.com/blog/mcp-buscalead-claude-code-codex-hermes-openclaw
+
+## Fatos oficiais
+
+- Base: mais de 29 milhões de empresas ativas no Brasil (dados públicos da Receita Federal).
+- Endpoints: GET /v2/empresas (busca), GET /v2/empresas/{cnpj}, POST /v2/empresas/lote (até 100 CNPJs).
+- Autenticação: header Authorization: Bearer bl_... (chave da API v2, criada no painel).
+- Cobrança: 1 crédito por empresa devolvida ou CNPJ consultado. Busca vazia, CNPJ inexistente (404) e erros não cobram.
+- Teste grátis: 200 créditos por 7 dias, com e-mail confirmado.
+- Planos de API: de R$ 29,90/mês (5.000 créditos) a R$ 1.999,90/mês (3.000.000 de créditos).
+- Avulso: R$ 0,01 por empresa, de R$ 10 a R$ 1.000, válido por 12 meses.
+- A chave da API do CRM foi descontinuada: planos do CRM não incluem API e a chave antiga recebe 403.
+
+## Ferramentas MCP
+
+- buscar_empresas: busca por CNAE, UF, município, bairro, porte, situação, MEI, contato e data de abertura. 1 crédito por empresa devolvida.
+- consultar_empresa: ficha de uma empresa pelo CNPJ. 1 crédito; 404 não cobra.
+- consultar_lote: até 100 CNPJs. 1 crédito por empresa encontrada.
+- consultar_saldo: saldo e vencimentos. Grátis.
+- buscar_referencias: códigos de CNAE e município. Grátis.
+- Limite: 60 chamadas de ferramenta por minuto por chave.
+
+## Como conectar (Claude Code)
+
+claude mcp add --transport http buscandlead https://api.buscalead.com/mcp --header "Authorization: Bearer bl_SUA_CHAVE"
+
+## Contato e empresa
+
+- Site: https://buscalead.com
+- LinkedIn: https://www.linkedin.com/company/buscalead
+- Instagram: https://www.instagram.com/buscalead.ai
